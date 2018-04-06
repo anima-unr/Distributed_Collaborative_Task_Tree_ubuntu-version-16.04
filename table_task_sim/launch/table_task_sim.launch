@@ -1,0 +1,11 @@
+<launch>
+	<!-- load the simulator node -->
+	<node name="table_sim" pkg="table_task_sim" type="table_task_sim_node">
+    	<param name="filename" value="$(find table_task_sim)/config/teatime_setup.yaml" />
+	</node>
+
+	<!-- load rviz configured for the task -->
+  	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find table_task_sim)/config/table_task.rviz" />
+	<!--<node name="remote_mutex" pkg="remote_mutex" type="remote_mutex_service" output="screen" args="right_arm_mutex"/>-->
+
+</launch>

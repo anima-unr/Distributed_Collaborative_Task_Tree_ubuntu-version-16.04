@@ -1,0 +1,9 @@
+<launch>
+  <node name="remote_mutex" pkg="remote_mutex" type="remote_mutex_service" output="screen" args="right_arm_mutex"/>
+  <node launch-prefix="ddd --args" name="collabTest" pkg="table_setting_demo" type="collaborative_test" output="screen">
+    <rosparam file="$(find table_setting_demo)/params/collaborative_test.yaml"/>
+    <rosparam file="$(find table_setting_demo)/testing/params/collab_params.yaml"/>
+  </node>
+
+  <node name="gui" pkg="rqt_gui" type="rqt_gui" output="screen" />
+</launch>

@@ -1,0 +1,22 @@
+objects:
+    - name      : Left_Bread
+      location  : {x: 0.0, y: 0.0}
+      scale     : {x: 0.05, y: 0.05, z: 0.05}
+      color     : {r: 0.0, g: 0.0, b: 1.0, a: 0.9}
+    - name      : Lettuce
+      location  : {x: 0.25, y: 0.0}
+      scale     : {x: 0.05, y: 0.05, z: 0.05}
+      color     : {r: 0.0, g: 0.9, b: 0.5, a: 0.9}
+    - name      : Meat
+      location  : {x: 0.0, y: 0.25}
+      scale     : {x: 0.05, y: 0.05, z: 0.05}
+      color     : {r: 1.0, g: 0.9, b: 0.0, a: 0.9}
+    - name      : Right_Bread
+      location  : {x: 0.25, y: 0.25}
+      scale     : {x: 0.05, y: 0.05, z: 0.05}
+      color     : {r: 0.0, g: 0.0, b: 0.9, a: 0.9}
+robots:
+    - location  : {x: 0.0, y: -0.45}
+      color     : {r: 1.0, g: 0.0, b: 0.0, a: 0.9}
+    - location  : {x: 0.05, y: 0.45}
+      color     : {r: 1.0, g: 0.5, b: 0.0, a: 0.9}

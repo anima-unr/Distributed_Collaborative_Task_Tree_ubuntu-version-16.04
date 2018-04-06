@@ -1,0 +1,8 @@
+uint8 SUCCESS = 0
+uint8 FAILURE_NOOBJECT = 1
+uint8 FAILURE_OBJECTHELD = 2
+
+int32 robot_id
+string object_name
+---
+int32 result

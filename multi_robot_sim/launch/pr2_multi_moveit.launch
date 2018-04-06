@@ -1,0 +1,6 @@
+<launch>
+	<group ns="pr2">
+		<param name="publish_monitored_planning_scene" type="str" value="true"/>
+    	<include file="$(find onr_pr2_moveit_config)/launch/move_group.launch" />
+	</group>
+</launch>

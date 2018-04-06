@@ -1,0 +1,5 @@
+<launch>
+	<group ns="pr2">
+    	  <node name="pick_place" pkg="table_setting_demo" type="pr2_pick_service" args="-r $(find table_setting_demo)/pr2_teatime.txt" output="screen"/>
+	</group>
+</launch>

@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: pr2_description
+    relative_path: robots/pr2.urdf.xacro
+  SRDF:
+    relative_path: config/pr2.srdf
+  CONFIG:
+    author_name: David Feil-Seifer
+    author_email: dave@cse.unr.edu
+    generated_timestamp: 1495663872

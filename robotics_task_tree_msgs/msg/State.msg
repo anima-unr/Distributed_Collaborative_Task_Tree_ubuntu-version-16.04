@@ -1,0 +1,10 @@
+NodeBitmask owner
+uint8 active
+uint8 done
+float32 activation_level
+float32 activation_potential
+uint8 peer_active
+uint8 peer_done
+NodeBitmask highest
+float32 highest_potential
+int32 parent_type

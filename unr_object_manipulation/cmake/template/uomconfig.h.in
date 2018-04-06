@@ -1,0 +1,6 @@
+
+
+#cmakedefine LOG_INFO_PRINTING
+
+#cmakedefine DEBUG
+

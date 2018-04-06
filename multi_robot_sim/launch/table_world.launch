@@ -1,0 +1,39 @@
+<launch>
+
+  <include file="$(find multi_robot_sim)/launch/table_base_world.launch"/>
+
+    <!-- send pr2 urdf to param server -->
+  <group ns="pr2">
+      <!-- send pr2 urdf to param server -->
+    <include file="$(find pr2_description)/robots/upload_pr2.launch" />
+
+    <node name="spawn_pr2_model" pkg="gazebo_ros" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -unpause -urdf -param robot_description -model pr2 -ros_namespace /gazebo" respawn="false" output="screen" />
+  </group>
+
+
+  <param name="robot_description" command="$(find xacro)/xacro.py --inorder '$(find baxter_description)/urdf/baxter.urdf.xacro' gazebo:=true" />
+
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="spawn_baxter_model" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+  args="-param robot_description -urdf -x 2.0 -z 0.93 -Y 3.1415927 -model baxter
+        -J baxter::right_s0 -0.272659
+        -J baxter::right_s1 1.04701
+        -J baxter::right_e0 -0.00123203
+        -J baxter::right_e1 0.49262
+        -J baxter::right_w0 -0.0806423
+        -J baxter::right_w1 -0.0620532
+        -J baxter::right_w2 0.0265941
+        -J baxter::left_s0 0.192483
+        -J baxter::left_s1 1.047
+        -J baxter::left_e0 0.000806359
+        -J baxter::left_e1 0.491094
+        -J baxter::left_w0 -0.178079
+        -J baxter::left_w1 -0.0610333
+        -J baxter::left_w2 -0.0124707" />
+
+
+  <include file="$(find multi_robot_sim)/launch/baxter_multi.launch"/>
+  <include file="$(find multi_robot_sim)/launch/pr2_multi.launch"/>
+
+</launch>
