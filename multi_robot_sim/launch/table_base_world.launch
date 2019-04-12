@@ -1,0 +1,38 @@
+<launch>
+  <arg name="gui" default="true"/>
+	
+  <param name="/use_sim_time" value="true" />
+
+  <!-- start up empty world -->
+  <arg name="paused" default="true"/>
+  <!-- TODO: throttled not implemented in gazebo_ros/empty_world.launch
+  <arg name="throttled" default="false"/>
+  -->
+
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)" />
+    <!-- TODO: throttled not implemented in gazebo_ros/empty_world.launch
+    <arg name="throttled" value="$(arg throttled)" />
+    -->
+  </include>
+
+  <!-- spawn table and tabletop object -->
+  <param name="table_description" 
+   command="$(find xacro)/xacro.py '$(find multi_robot_sim)/urdf/table.urdf.xacro'" />
+  <node name="spawn_table" pkg="gazebo_ros" type="spawn_model" args="-urdf -param table_description -model table_1" 
+   respawn="false" output="screen" />
+
+  <!-- Publish a static transform between the world and the base of the robot -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="baxter_to_world" args="2 0 0.93 3.1415927 0 0 world baxter/world" />
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="pr2_to_world" args="0 0 0 0 0 0 1 world odom_combined" />
+
+  <arg name="load_robot_description" default="true"/>
+
+</launch>

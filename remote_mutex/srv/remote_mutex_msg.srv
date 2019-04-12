@@ -1,0 +1,5 @@
+string name
+float32 activation_potential
+bool request
+---
+bool success

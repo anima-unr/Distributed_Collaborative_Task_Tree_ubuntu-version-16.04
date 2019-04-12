@@ -1,0 +1,8 @@
+<launch>
+    <node name="PR2_interface" pkg="unr_object_manipulation" type="peer_connection_interface.py" output="screen">
+    	<rosparam file="$(find robotics_task_tree_eval)/test_network_FULL.yaml"/>
+        <param name="robot" value="PR2"/>
+        <param name="pub_port" value="5566"/>
+        <param name="sub_port" value="5565"/>
+    </node>
+</launch>

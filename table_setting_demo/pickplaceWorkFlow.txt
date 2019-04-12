@@ -1,0 +1,20 @@
+void Node::Activate() {
+        boost::lock_guard<boost::mutex> lock(work_mut);
+
+void WorkThread(Node *node) {
+  node->Work();
+
+void TableObject::Work() {
+  PickAndPlace(object_id_.c_str());
+
+void TableObject::PickAndPlace(std::string object) {
+  if (ros::service::call("pick_and_place_object", msg)) {
+
+bool PickPlace::PickAndPlaceObject(
+  work_thread =  boost::shared_ptr<boost::thread>(new boost::thread(&PickAndPlaceThread, this, req.object));
+
+void PickAndPlaceThread(PickPlace *manipulation, std::string object) {
+  manipulation->PickAndPlaceImpl(object);
+void PickPlace::PickAndPlaceImpl(std::string object) {
+	which then does the pick and place stuffs
+

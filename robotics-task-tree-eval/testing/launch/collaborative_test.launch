@@ -1,0 +1,4 @@
+<launch>
+  <node name="CollaborativeTest" pkg="table_setting_demo" type="collaborative_test" output="screen">
+  </node>
+</launch>

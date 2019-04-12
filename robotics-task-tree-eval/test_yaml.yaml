@@ -1,0 +1,179 @@
+# typedef enum {  // Eight possible node types
+#   THEN = 0,     // 0
+#   OR,           // 1
+#   AND,          // 2
+#   BEHAVIOR,     // 3
+#   ROOT,         // 4
+#   PLACE,        // 5
+#   BEHAVIOR_VM   // 6
+# } NodeTypes_t;
+
+# typedef enum {  // Eight possible robots
+#   PR2 = 0, // 0
+#   BAXTER,  // 1
+# } RobotTypes;
+
+
+NodeList: ['ROOT_4_0_000', 'THEN_0_0_001', 'AND_2_0_002', 'PLACE_3_0_003', 'PLACE_3_0_004', 'PLACE_3_0_005', 'OR_1_0_006', 'PLACE_3_0_007', 'PLACE_3_0_008', 'ROOT_4_1_009', 'THEN_0_1_010', 'AND_2_1_011', 'PLACE_3_1_012', 'PLACE_3_1_013', 'PLACE_3_1_014', 'OR_1_1_015', 'PLACE_3_1_016', 'PLACE_3_1_017']
+
+
+Nodes:
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['THEN_0_0_001']
+    peers: ['ROOT_4_1_009']
+  THEN_0_0_001:
+    mask:
+      type: 0
+      robot: 0
+      node: 1
+    parent: ROOT_4_0_000
+    children: ['AND_2_0_002', 'OR_1_0_006']
+    peers: ['THEN_0_1_010']
+  AND_2_0_002:
+    mask:
+      type: 2
+      robot: 0
+      node: 2
+    parent: THEN_0_0_001
+    children: ['PLACE_3_0_003', 'PLACE_3_0_004', 'PLACE_3_0_005']
+    peers: ['AND_2_1_011']
+  PLACE_3_0_003:
+    mask:
+      type: 5
+      robot: 0
+      node: 3
+    parent: AND_2_0_002
+    children: ['NONE']
+    peers: ['PLACE_3_1_012']
+    object: clock
+  PLACE_3_0_004:
+    mask:
+      type: 5
+      robot: 0
+      node: 4
+    parent: AND_2_0_002
+    children: ['NONE']
+    peers: ['PLACE_3_1_013']
+    object: bird
+  PLACE_3_0_005:
+    mask:
+      type: 5
+      robot: 0
+      node: 5
+    parent: AND_2_0_002
+    children: ['NONE']
+    peers: ['PLACE_3_1_014']
+    object: apple
+  OR_1_0_006:
+    mask:
+      type: 1
+      robot: 0
+      node: 6
+    parent: THEN_0_0_001
+    children: ['PLACE_3_0_007', 'PLACE_3_0_008']
+    peers: ['OR_1_1_015']
+  PLACE_3_0_007:
+    mask:
+      type: 5
+      robot: 0
+      node: 7
+    parent: OR_1_0_006
+    children: ['NONE']
+    peers: ['PLACE_3_1_016']
+    object: cup
+  PLACE_3_0_008:
+    mask:
+      type: 5
+      robot: 0
+      node: 8
+    parent: OR_1_0_006
+    children: ['NONE']
+    peers: ['PLACE_3_1_017']
+    object: scissors
+
+# ---------------------------------------------
+
+
+  ROOT_4_1_009:
+    mask:
+      type: 4
+      robot: 1
+      node: 9
+    parent: 'NONE'
+    children: ['THEN_1_0_010']
+    peers: ['ROOT_4_0_000']
+  THEN_0_1_010:
+    mask:
+      type: 0
+      robot: 1
+      node: 10
+    parent: ROOT_4_1_009
+    children: ['AND_2_1_011', 'OR_1_1_015']
+    peers: ['THEN_0_0_001']
+  AND_2_1_011:
+    mask:
+      type: 2
+      robot: 1
+      node: 11
+    parent: THEN_1_1_001
+    children: ['PLACE_3_1_012', 'PLACE_3_1_013', 'PLACE_3_1_014']
+    peers: ['AND_2_0_002']
+  PLACE_3_1_012:
+    mask:
+      type: 5
+      robot: 1
+      node: 12
+    parent: AND_2_1_011
+    children: ['NONE']
+    peers: ['PLACE_3_0_003']
+    object: clock
+  PLACE_3_1_013:
+    mask:
+      type: 5
+      robot: 1
+      node: 13
+    parent: AND_2_1_011
+    children: ['NONE']
+    peers: ['PLACE_3_0_004']
+    object: bird
+  PLACE_3_1_014:
+    mask:
+      type: 5
+      robot: 1
+      node: 14
+    parent: AND_2_1_011
+    children: ['NONE']
+    peers: ['PLACE_3_0_005']
+    object: apple
+  OR_1_1_015:
+    mask:
+      type: 1
+      robot: 1Z
+      node: 15
+    parent: THEN_1_0_010
+    children: ['PLACE_3_1_016', 'PLACE_3_1_017']
+    peers: ['OR_1_0_006']
+  PLACE_3_1_016:
+    mask:
+      type: 5
+      robot: 1
+      node: 16
+    parent: OR_1_1_015
+    children: ['NONE']
+    peers: ['PLACE_3_0_007']
+    object: cup
+  PLACE_3_1_017:
+    mask:
+      type: 5
+      robot: 1
+      node: 17
+    parent: OR_1_1_015
+    children: ['NONE']
+    peers: ['PLACE_3_0_008']
+    object: scissors
+

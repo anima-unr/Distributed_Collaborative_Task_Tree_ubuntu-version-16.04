@@ -1,0 +1,94 @@
+# typedef enum NodeTypes {  // Eight possible node types
+#   THEN = 0,     // 0
+#   OR,           // 1
+#   AND,          // 2
+#   BEHAVIOR,     // 3
+#   R0OT,         // 4
+# } NodeTypes_t;
+
+# typedef enum RobotTypes {  // Eight possible robots
+#   PR2 = 0,
+#   BAXTER,
+# }
+
+# struct NodeBitmask {
+#   uint8_t type;
+#   uint8_t robot;
+#   uint16_t node;
+# };
+NodeList: 
+    - 'ROOT_4_0_000'
+    - 'AND_2_0_001'
+    - 'PLACE_3_0_002'
+    - 'PLACE_3_0_003'
+    - 'ROOT_4_1_000'
+    - 'AND_2_1_001'
+    - 'PLACE_3_1_002'
+    - 'PLACE_3_1_003'
+Nodes:
+  # ROBOT: BAXTER ==============================================================
+  ROOT_4_1_000:
+    mask:
+      type: 4
+      robot: 1
+      node: 0
+    parent: 'NONE'
+    children: ['AND_2_1_001']
+    peers: ['ROOT_4_0_000']
+  AND_2_1_001:
+    mask:
+      type: 2
+      robot: 1
+      node: 1
+    parent: 'ROOT_4_1_000'
+    children: ['PLACE_3_1_002', 'PLACE_3_1_003']
+    peers: ['AND_2_0_001']
+  PLACE_3_1_002:
+    mask:
+      type: 3
+      robot: 1
+      node: 2
+    parent: 'AND_2_1_001'
+    children: ['NONE']
+    peers: ['PLACE_3_0_002']
+  PLACE_3_1_003:
+    mask:
+      type: 3
+      robot: 1
+      node: 3
+    parent: 'AND_2_1_001'
+    children: ['NONE']
+    peers: ['PLACE_3_0_003']
+  # ROBOT: PR2 =================================================================
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['AND_2_0_001']
+    peers: ['ROOT_4_1_000']
+  AND_2_0_001:
+    mask:
+      type: 2
+      robot: 0
+      node: 1
+    parent: 'ROOT_4_0_000'
+    children: ['PLACE_3_0_002', 'PLACE_3_0_003']
+    peers: ['AND_2_1_001']
+  PLACE_3_0_002:
+    mask:
+      type: 3
+      robot: 0
+      node: 2
+    parent: 'AND_2_0_001'
+    children: ['NONE']
+    peers: ['PLACE_3_1_002']
+  PLACE_3_0_003:
+    mask:
+      type: 3
+      robot: 0
+      node: 3
+    parent: 'AND_2_0_001'
+    children: ['NONE']
+    peers: ['PLACE_3_1_003']

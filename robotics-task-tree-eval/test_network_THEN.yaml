@@ -1,0 +1,97 @@
+# typedef enum {  // Eight possible node types
+#   THEN = 0,     // 0
+#   OR,           // 1
+#   AND,          // 2
+#   BEHAVIOR,     // 3
+#   ROOT,         // 4
+#   PLACE,        // 5
+# } NodeTypes_t;
+
+# typedef enum {  // Eight possible robots
+#   PR2 = 0, // 0
+#   BAXTER,  // 1
+# } RobotTypes;
+
+NodeList: ['ROOT_4_0_000',
+        'PLACE_5_0_001',
+        'PLACE_5_0_002',
+        'PLACE_5_1_003',
+        'PLACE_5_1_004',
+        'ROOT_4_1_005',
+        'THEN_0_0_006',
+        'THEN_0_1_007']
+
+Nodes: 
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['THEN_0_0_006']
+    peers: ['NONE']
+
+  PLACE_5_0_001:
+    mask:
+      type: 5
+      robot: 0
+      node: 1
+    parent: 'THEN_0_0_006'
+    # children: ['NONE']
+    peers: ['PLACE_5_1_003']
+
+  PLACE_5_0_002:
+    mask:
+      type: 5
+      robot: 0
+      node: 2
+    parent: 'THEN_0_0_006'
+    # children: ['NONE']
+    peers: ['PLACE_5_1_004']
+
+  THEN_0_0_006:
+    mask:
+      type: 0
+      robot: 0
+      node: 6
+    parent: 'ROOT_4_0_000'
+    children: ['PLACE_5_0_001', 'PLACE_5_0_002']
+    peers: ['THEN_0_1_007']
+
+#-----------------------------------
+
+  ROOT_4_1_005:
+    mask:
+      type: 4
+      robot: 1
+      node: 5
+    parent: 'NONE'
+    children: ['THEN_0_1_007']
+    peers: ['NONE']
+
+  PLACE_5_1_003:
+    mask:
+      type: 5
+      robot: 1
+      node: 3
+    parent: 'THEN_0_1_007'
+    # children: ['NONE']
+    peers: ['PLACE_5_0_001']
+
+  PLACE_5_1_004:
+    mask:
+      type: 5
+      robot: 1
+      node: 4
+    parent: 'THEN_0_1_007'
+    # children: ['NONE']
+    peers: ['PLACE_5_0_002']
+
+  THEN_0_1_007:
+    mask:
+      type: 0
+      robot: 1
+      node: 7
+    parent: 'ROOT_4_1_005'
+    children: ['PLACE_5_1_003', 'PLACE_5_1_004']
+    peers: ['THEN_0_0_006']

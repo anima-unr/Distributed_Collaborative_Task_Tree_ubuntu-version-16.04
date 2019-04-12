@@ -1,0 +1,6 @@
+<launch>
+
+  <!-- rviz for visualization -->
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find multi_robot_sim)/launch/multi_robot_rviz.rviz" />
+</launch>

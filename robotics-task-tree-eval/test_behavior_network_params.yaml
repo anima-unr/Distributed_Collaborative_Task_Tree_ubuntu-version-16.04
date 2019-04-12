@@ -1,0 +1,4 @@
+name: "test_0_0_000"
+peers: ['peer_0_0_001', 'peer_0_0_002']
+children: ['child_0_0_003', 'child_0_0_004', 'child_0_0_005']
+parent: "test_0_0_006"

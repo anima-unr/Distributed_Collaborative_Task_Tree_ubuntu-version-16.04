@@ -1,0 +1,14 @@
+{
+  "linters": {
+    "google-c++-style": {
+      "type": "cpplint",
+      "include": ["(\\.cc$)","(\\.h$)","(\\.cpp$)"],
+      "exclude": "(^build/)"
+    },
+    "cppcheck-c++-linter": {
+      "type": "cppcheck",
+      "include": ["(\\.cc$)","(\\.h$)","(\\.cpp$)"],
+      "exclude": "(^build/)"
+    }
+  }
+}

@@ -1,0 +1,148 @@
+# typedef enum {  // Eight possible node types
+#   THEN = 0,     // 0
+#   OR,           // 1
+#   AND,          // 2
+#   BEHAVIOR,     // 3
+#   ROOT,         // 4
+#   PLACE,        // 5
+# } NodeTypes_t;
+
+# typedef enum {  // Eight possible robots
+#   PR2 = 0, // 0
+#   BAXTER,  // 1
+# } RobotTypes;
+
+NodeList: ['ROOT_4_0_000',
+        'PLACE_5_0_001',
+        'PLACE_5_0_002',
+        'PLACE_5_0_003',
+        'PLACE_5_0_004',
+        'OR_1_0_006',
+        'ROOT_4_1_005',
+        'OR_1_1_007',
+        'PLACE_5_1_008',
+        'PLACE_5_1_009',
+        'PLACE_5_1_010',
+        'PLACE_5_1_011']
+
+Nodes: 
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['OR_1_0_006']
+    peers: ['NONE']
+
+  PLACE_5_0_001:
+    mask:
+      type: 5
+      robot: 0
+      node: 1
+    parent: 'OR_1_0_006'
+    # children: ['NONE']
+    peers: ['PLACE_5_1_008', 'PLACE_5_1_009', 'PLACE_5_1_010', 'PLACE_5_1_011']
+    object: 'Lettuce'
+
+  PLACE_5_0_002:
+    mask:
+      type: 5
+      robot: 0
+      node: 2
+    parent: 'OR_1_0_006'
+    # children: ['NONE']
+    peers: ['PLACE_5_1_008', 'PLACE_5_1_009', 'PLACE_5_1_010', 'PLACE_5_1_011']
+    object: 'Left_Bread'
+
+  PLACE_5_0_003:
+    mask:
+      type: 5
+      robot: 0
+      node: 3
+    parent: 'OR_1_0_006'
+    # children: ['NONE']
+    peers: ['PLACE_5_1_008', 'PLACE_5_1_009', 'PLACE_5_1_010', 'PLACE_5_1_011']
+    object: 'Meat'
+
+  PLACE_5_0_004:
+    mask:
+      type: 5
+      robot: 0
+      node: 4
+    parent: 'OR_1_0_006'
+    # children: ['NONE']
+    peers: ['PLACE_5_1_008', 'PLACE_5_1_009', 'PLACE_5_1_010', 'PLACE_5_1_011']
+    object: 'Right_Bread'
+
+
+  OR_1_0_006:
+    mask:
+      type: 1
+      robot: 0
+      node: 6
+    parent: 'ROOT_4_0_000'
+    children: ['PLACE_5_0_001', 'PLACE_5_0_002', 'PLACE_5_0_003', 'PLACE_5_0_004']
+    peers: ['OR_1_1_007']
+
+#-----------------------------------
+
+  ROOT_4_1_005:
+    mask:
+      type: 4
+      robot: 1
+      node: 5
+    parent: 'NONE'
+    children: ['OR_1_1_007']
+    peers: ['NONE']
+
+  PLACE_5_1_008:
+    mask:
+      type: 5
+      robot: 1
+      node: 8
+    parent: 'OR_1_1_007'
+    # children: ['NONE']
+    peers: ['PLACE_5_0_001', 'PLACE_5_0_002', 'PLACE_5_0_003', 'PLACE_5_0_004']
+    object: 'Lettuce'
+
+
+  PLACE_5_1_009:
+    mask:
+      type: 5
+      robot: 1
+      node: 9
+    parent: 'OR_1_1_007'
+    # children: ['NONE']
+    peers: ['PLACE_5_0_001', 'PLACE_5_0_002', 'PLACE_5_0_003', 'PLACE_5_0_004']
+    object: 'Left_Bread'
+
+  PLACE_5_1_010:
+    mask:
+      type: 5
+      robot: 1
+      node: 10
+    parent: 'OR_1_1_007'
+    # children: ['NONE']
+    peers: ['PLACE_5_0_001', 'PLACE_5_0_002', 'PLACE_5_0_003', 'PLACE_5_0_004']
+    object: 'Meat'
+
+  PLACE_5_1_011:
+    mask:
+      type: 5
+      robot: 1
+      node: 11
+    parent: 'OR_1_1_007'
+    # children: ['NONE']
+    peers: ['PLACE_5_0_001', 'PLACE_5_0_002', 'PLACE_5_0_003', 'PLACE_5_0_004']
+    object: 'Right_Bread'
+
+
+  OR_1_1_007:
+    mask:
+      type: 1
+      robot: 1
+      node: 7
+    parent: 'ROOT_4_1_005'
+    children: ['PLACE_5_1_008', 'PLACE_5_1_009', 'PLACE_5_1_010', 'PLACE_5_1_011']
+    peers: ['OR_1_0_006']

@@ -1,0 +1,18 @@
+NodeList: ['ROOT_4_0_000', 'PLACE_3_0_001' ]
+Nodes: 
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['PLACE_3_0_001']
+    peers: ['NONE']
+  PLACE_3_0_001:
+    mask:
+      type: 3
+      robot: 0
+      node: 1
+    parent: ROOT_4_0_000
+    peers: ['NONE']
+    object: Plate

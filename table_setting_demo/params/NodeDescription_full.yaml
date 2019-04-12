@@ -1,0 +1,113 @@
+NodeList: ['ROOT_4_0_000', 'AND_2_0_001', 'THEN_0_0_002', 'PLACE_3_0_003', 'AND_2_0_004', 'PLACE_3_0_005', 'PLACE_3_0_006', 'THEN_0_0_007', 'PLACE_3_0_008', 'OR_1_0_009', 'PLACE_3_0_010', 'PLACE_3_0_011', 'PLACE_3_0_012']
+Nodes: 
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['AND_2_0_001']
+    peers: ['ROOT_4_1_000']
+  AND_2_0_001:
+    mask:
+      type: 2
+      robot: 0
+      node: 1
+    parent: ROOT_4_0_000
+    children: ['THEN_0_0_002', 'THEN_0_0_007']
+    peers: ['NONE']
+  THEN_0_0_002:
+    mask:
+      type: 0
+      robot: 0
+      node: 2
+    parent: AND_2_0_001
+    children: ['PLACE_3_0_003', 'AND_2_0_004']
+    peers: ['NONE']
+  PLACE_3_0_003:
+    mask:
+      type: 3
+      robot: 0
+      node: 3
+    parent: THEN_0_0_002
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Cup
+  AND_2_0_004:
+    mask:
+      type: 2
+      robot: 0
+      node: 4
+    parent: THEN_0_0_002
+    children: ['PLACE_3_0_005', 'PLACE_3_0_006']
+    peers: ['NONE']
+  PLACE_3_0_005:
+    mask:
+      type: 3
+      robot: 0
+      node: 5
+    parent: AND_2_0_004
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Sugar
+  PLACE_3_0_006:
+    mask:
+      type: 3
+      robot: 0
+      node: 6
+    parent: AND_2_0_004
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Tea
+  THEN_0_0_007:
+    mask:
+      type: 0
+      robot: 0
+      node: 7
+    parent: AND_2_0_001
+    children: ['PLACE_3_0_008', 'OR_1_0_009', 'PLACE_3_0_012']
+    peers: ['NONE']
+  PLACE_3_0_008:
+    mask:
+      type: 3
+      robot: 0
+      node: 8
+    parent: THEN_0_0_007
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Left_Bread
+  OR_1_0_009:
+    mask:
+      type: 1
+      robot: 0
+      node: 9
+    parent: THEN_0_0_007
+    children: ['PLACE_3_0_010', 'PLACE_3_0_011']
+    peers: ['NONE']
+  PLACE_3_0_010:
+    mask:
+      type: 3
+      robot: 0
+      node: 10
+    parent: OR_1_0_009
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Meat
+  PLACE_3_0_011:
+    mask:
+      type: 3
+      robot: 0
+      node: 11
+    parent: OR_1_0_009
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Lettuce
+  PLACE_3_0_012:
+    mask:
+      type: 3
+      robot: 0
+      node: 12
+    parent: THEN_0_0_007
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Right_Bread

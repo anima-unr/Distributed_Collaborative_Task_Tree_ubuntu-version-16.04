@@ -1,0 +1,6 @@
+<launch>
+  <node name="NodeTest" pkg="robotics_task_tree_eval" type="robotics_task_tree_eval_net" launch-prefix="ddd --args" output="screen">
+    <rosparam file="$(find robotics_task_tree_eval)/test_behavior_network_params.yaml"/>
+    <rosparam file="$(find robotics_task_tree_eval)/test_nodes.yaml"/>
+  </node>
+</launch>

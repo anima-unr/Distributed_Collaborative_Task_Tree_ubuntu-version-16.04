@@ -1,0 +1,54 @@
+NodeList: ['ROOT_4_0_000', 'THEN_0_0_001', 'PLACE_3_0_002', 'AND_2_0_003', 'PLACE_3_0_004', 'PLACE_3_0_005' ]
+Nodes: 
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['THEN_0_0_001']
+    peers: ['NONE']
+  
+  THEN_0_0_001:
+    mask:
+      type: 0
+      robot: 0
+      node: 1
+    parent: ROOT_4_0_000
+    children: ['PLACE_3_0_002', 'AND_2_0_003']
+    peers: ['NONE']
+  PLACE_3_0_002:
+    mask:
+      type: 3
+      robot: 0
+      node: 2
+    parent: THEN_0_0_001
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Cup
+  AND_2_0_003:
+    mask:
+      type: 2
+      robot: 0
+      node: 3
+    parent: THEN_0_0_001
+    children: ['PLACE_3_0_004', 'PLACE_3_0_005']
+    peers: ['NONE']
+  PLACE_3_0_004:
+    mask:
+      type: 3
+      robot: 0
+      node: 4
+    parent: AND_2_0_003
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Sugar
+  PLACE_3_0_005:
+    mask:
+      type: 3
+      robot: 0
+      node: 5
+    parent: AND_2_0_003
+    # children: ['NONE']
+    peers: ['NONE']
+    object: Tea

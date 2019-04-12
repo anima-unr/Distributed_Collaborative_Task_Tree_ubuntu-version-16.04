@@ -1,0 +1,6 @@
+string obj_name
+---
+geometry_msgs/PoseStamped pick_pose
+geometry_msgs/PoseStamped approach_pose
+std_msgs/Float32 score
+gpd/GraspConfig grasp
