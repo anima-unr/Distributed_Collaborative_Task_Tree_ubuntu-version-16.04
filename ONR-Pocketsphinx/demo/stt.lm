@@ -1,0 +1,28 @@
+Language model created by QuickLM on Mon Feb 11 16:33:25 EST 2019
+Carnegie Mellon University (c) 1996
+
+This model based on a corpus of 2 sentences and 6 words
+The (fixed) discount mass is 0.5
+
+\data\
+ngram 1=4
+ngram 2=4
+ngram 3=2
+
+\1-grams:
+-0.7782 </s> -0.3010
+-0.7782 <s> -0.2218
+-1.0792 NO -0.2218
+-1.0792 YES -0.2218
+
+\2-grams:
+-0.6021 <s> NO 0.0000
+-0.6021 <s> YES 0.0000
+-0.3010 NO </s> -0.3010
+-0.3010 YES </s> -0.3010
+
+\3-grams:
+-0.3010 <s> NO </s>
+-0.3010 <s> YES </s>
+
+\end\

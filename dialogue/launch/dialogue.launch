@@ -1,0 +1,5 @@
+<launch>
+	<node name="watcher" pkg="dialogue" type="watcher.py" output="screen"/>
+	<node name="chatter" pkg="dialogue" type="chatter.py" output="screen"/>
+	<node name="soundplay_node" pkg="sound_play" type="soundplay_node.py" output="screen"/>
+</launch>

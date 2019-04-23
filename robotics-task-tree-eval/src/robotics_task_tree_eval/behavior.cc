@@ -32,12 +32,12 @@ Behavior::Behavior(NodeId_t name, NodeList peers, NodeList children,
     State_t state,
     std::string object,
     bool use_local_callback_queue,
-    int mtime) : Node(name,
+    boost::posix_time::millisec mtime) : Node(name,
       peers,
       children,
       parent,
       state,
-      object) {
+      object) {  
       // printf("Behavior::Behavior WAS CALLED\n");
   ROS_WARN("END OF BEHAVIOR CONSTRUCTOR");
 }
@@ -91,7 +91,7 @@ void AndBehavior::UpdateActivationPotential() {
       nbm.node = (*it)->state.highest.node;
       //ROS_INFO( "nbm mask (%02d_%1d_%03d)", nbm.type, nbm.robot, nbm.node );
       //nbm = (*it)->state.highest;
-
+      
     }
   }
   state_.activation_potential = sum / children_.size();
@@ -132,7 +132,7 @@ bool AndBehavior::IsDone() {
   ROS_DEBUG("[%s]: AndBehavior::IsDone was called", name_->topic.c_str() );
   for( int i = 0; i < children_.size(); i++ )
   {
-    if( !(children_[i]->state.done || children_[i]->state.peer_done) )
+    if( !(children_[i]->state.done || children_[i]->state.peer_done) ) 
     {
       ROS_DEBUG( "[%s]: state not done: %d", name_->topic.c_str(), children_[i]->state.owner.node);
       state_.done = 0;
@@ -164,7 +164,7 @@ ThenBehavior::ThenBehavior(NodeId_t name, NodeList peers, NodeList children,
       state,
       object) {
   // Initialize activation queue
-      // printf("ThenBehavior::ThenBehavior WAS CALLED\n");
+       printf("ThenBehavior::ThenBehavior WAS CALLED\n");
   for (NodeListPtrIterator it = children_.begin(); it != children_.end();
       ++it) {
     activation_queue_.push(*it);
@@ -243,7 +243,7 @@ bool ThenBehavior::IsDone() {
   ROS_DEBUG("[%s]: ThenBehavior::IsDone was called", name_->topic.c_str() );
   for( int i = 0; i < children_.size(); i++ )
   {
-    if( !(children_[i]->state.done || children_[i]->state.peer_done) )
+    if( !(children_[i]->state.done || children_[i]->state.peer_done) ) 
     {
       ROS_DEBUG( "[%s]: state not done: %d", name_->topic.c_str(), children_[i]->state.owner.node);
       state_.done = 0;
@@ -361,10 +361,10 @@ void OrBehavior::UpdateActivationPotential() {
 
 bool OrBehavior::Precondition() {
   ROS_DEBUG("OrBehavior::Precondition was called!!!!\n");
-
+  
   for( int i = 0; i < children_.size(); i++ )
   {
-    if( children_[i]->state.done || children_[i]->state.peer_done)
+    if( children_[i]->state.done || children_[i]->state.peer_done) 
     {
       ROS_INFO( "[%s]: state done: %d", name_->topic.c_str(), children_[i]->state.owner.node);
       state_.done = 1;
@@ -385,16 +385,16 @@ uint32_t OrBehavior::SpreadActivation() {
 
   for( int i = 0; i < children_.size(); i++ )
   {
-    SendToChild(children_[i]->mask, msg);
+    SendToChild(children_[i]->mask, msg);  
   }
-
+  
 }
 
 bool OrBehavior::IsDone() {
   ROS_DEBUG("[%s]: OrBehavior::IsDone was called", name_->topic.c_str() );
   for( int i = 0; i < children_.size(); i++ )
   {
-    if( children_[i]->state.done || children_[i]->state.peer_done )
+    if( children_[i]->state.done || children_[i]->state.peer_done ) 
     {
       ROS_DEBUG( "[%s]: state done: %d", name_->topic.c_str(), children_[i]->state.owner.node);
       state_.done = 1;
@@ -409,3 +409,4 @@ bool OrBehavior::IsDone() {
 
 
 }
+

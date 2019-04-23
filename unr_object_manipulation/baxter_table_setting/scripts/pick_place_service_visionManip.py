@@ -13,7 +13,6 @@ import cv_bridge
 import rospkg
 import tf
 import sys, argparse
-import time
 
 from geometry_msgs.msg import (
     PoseStamped,
@@ -23,7 +22,6 @@ from geometry_msgs.msg import (
 )
 
 from std_msgs.msg import Header
-from shape_msgs.msg import SolidPrimitive
 
 from sensor_msgs.msg import (
     Image,
@@ -38,7 +36,7 @@ from baxter_core_msgs.srv import (
 )
 
 from unr_object_manipulation.srv import *
-from unr_object_manipulation.srv import VisionManip
+
 import moveit_commander
 import moveit_msgs.msg
 
@@ -62,21 +60,16 @@ class PickPlace(object):
         self.side = side
         # TODO: JB Added
         # self._limb = baxter_interface.Limb(limb)
-        print('\n\n\n\n\n\n PICK PLACE CONSTRUCTOR !!!!!!!!!!!!!!!!!!!!! \n\n\n\n')
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
         self._limb = moveit_commander.MoveGroupCommander(limb)
-        self._limb.set_max_velocity_scaling_factor(0.7);
-        #self.collision_objects_ = moveit_msgs.msg.CollisionObject()
+        self._limb.set_max_velocity_scaling_factor(0.4);
 
         circle_io = baxter_interface.DigitalIO(side + '_lower_button')
         dash_io = baxter_interface.DigitalIO(side + '_upper_button')
         self.calibrating = False
         self.object_calib = -1
-        #self.objects = ["clock", "cup"]
-        self.objects = [  'Cup', 'Tea_Pot','Sugar','Burger','Sandwich','Apple']
-        #self.objects = ["teddy_bear", "sports_ball", "clock", "scissors", "cup"]
-        # , "orange", "book", "clock", "bottle", "scissors", "cup", "bowl"
+        self.objects = ["teddy_bear", "orange", "book", "clock", "bottle", "scissors", "cup", "bowl"]
         # self.objects = ['neutral', 'Cup', 'Tea', 'Sugar', 'Left_Bread', 'Right_Bread', 'Lettuce', 'Meat']
         # self.objects = ['neutral', 'placemat', 'cup', 'plate', 'fork', 'spoon', 'knife', 'bowl', 'soda', 'wineglass']
         # self.objects = ['neutral',  'cup', 'plate', 'bowl']
@@ -149,26 +142,11 @@ class PickPlace(object):
 
         return pose_target
 
+
     def moveToPose(self, pose):
 
         # define temp pose
         pose_target = Pose()
-        rospy.sleep(2)
-
-        # A pose for the table (specified relative to frame_id)
-        table_pose = PoseStamped()
-        table_pose.header.frame_id = 'base'
-        table_pose.pose.position.x =  0.65
-        table_pose.pose.position.y =  0
-        table_pose.pose.position.z =  -0.63 #objects_n3_v2.bin
-        self.scene.add_box("table2", table_pose, (1, 2, 0.85))
-
-        table_pose2 = PoseStamped()
-        table_pose2.header.frame_id = 'base'
-        table_pose2.pose.position.x =  0.1
-        table_pose2.pose.position.y =  -0.37
-        table_pose2.pose.position.z =  0 #objects_n3_v2.bin
-        self.scene.add_box("baxter_body2", table_pose2, (.1, 0.05, 0.4))
 
         # format the pose correctly
         print pose
@@ -180,11 +158,6 @@ class PickPlace(object):
         pose_target.position.y = pose.position.y
         pose_target.position.z = pose.position.z
 
-        #if pose_target.position.z < -0.1:
-          #print "ERROR Z TOO LOW"
-         # return False
-
-
         # set things
         self._limb.set_pose_target(pose_target)
         self._limb.set_num_planning_attempts(5);
@@ -194,164 +167,203 @@ class PickPlace(object):
 
         print("\tPlanning...")
         plan1 = self._limb.plan()
-        rospy.sleep(1)
+        # rospy.sleep(5)
         print("\tExecuting...")
-        self._limb.go(wait=True)
-        rospy.sleep(2)
+        # self._limb.go(wait=True)
+        # rospy.sleep(5)
 
 
     def PickAndPlaceImpl(self, req):
 
-        if self.stop:
-            return
-        print "Picking UP Object: " + req.object
-        # self._limb.set_joint_position_speed(0.2)
-        if self.stop:
-            return
-        self.state = STATE.NEUTRAL
+        collision = rospy.get_param("/Collision")
 
-        # ---------
-        '''print "Moving to {} APPROACH + Z".format(req.object)
-        rospy.sleep(1.0)
-        approach_pose_offset = copy.deepcopy(self.object_approach_poses[req.object])
-        approach_pose_offset.position.z = approach_pose_offset.position.z + 0.2;
-        approach_pose_offset.position.y = approach_pose_offset.position.y + 0.03;
-        self.moveToPose(approach_pose_offset)
-        if self.stop:
-            return
-        self._gripper.command_position(100.0)
-        self.state = STATE.APPROACHING
-        if self.stop:
-            return
-        rospy.sleep(1.0)
-        if self.stop:
-            return
+        # if collision detected
+        if collision:
 
-        # ---------
-        print "Moving to {} APPROACH".format(req.object)
-        rospy.sleep(1.0)
-        approach_pose_offset = copy.deepcopy(self.object_approach_poses[req.object])
-        approach_pose_offset.position.z = approach_pose_offset.position.z + 0.05;
-        approach_pose_offset.position.y = approach_pose_offset.position.y + 0.03;
-        self.moveToPose(approach_pose_offset)
-        if self.stop:
-            return
-        self.state = STATE.APPROACHING
-        if self.stop:
-            return
-        rospy.sleep(1.0)
-        if self.stop:
-            return'''
+            # ---------
+            print "Placing Down Object:" + req.object
+            print "Moving to {} PLACE APPROACH".format(req.object)
+            self.state = STATE.PLACING
+            rospy.sleep(3.0)
+            if self.stop:
+                return
+            place_pose_offset = copy.deepcopy(self.object_place_poses)
+            place_pose_offset = place_pose_offset[req.object]
+            place_pose_offset.position.z = place_pose_offset.position.z + 0.2;
+            self.moveToPose(place_pose_offset)
+            rospy.sleep(3.0)
+            if self.stop:
+                return
 
-        # ---------
-        print "Moving to {} PICK + Z".format(req.object)
-        self.state = STATE.PICKING
-        pick_pose_offset = copy.deepcopy(self.object_pick_poses[req.object])
-        pick_pose_offset.position.z = pick_pose_offset.position.z + 0.2;
-        pick_pose_offset.position.y = pick_pose_offset.position.y;
-        self.moveToPose(pick_pose_offset)
-        self._gripper.command_position(100.0)
-        if self.stop:
-            return
-        self.state = STATE.PICKED
-        if self.stop:
-            return
-        rospy.sleep(.5)
-        if self.stop:
-            return
+            # ---------
+            print "Moving to {} PLACE".format(req.object)
+            self.moveToPose(self.object_place_poses[req.object])
+            if self.stop:
+                return
+            self._gripper.command_position(100.0)
+            self.state = STATE.PLACED
+            if self.stop:
+                return
+            rospy.sleep(3.0)
+            if self.stop:
+                return
 
-        # ---------
-        if req.object == "sports_ball":
+            # ---------
+            print "Moving to {} PLACE APPROACH".format(req.object)
+            place_pose_offset = copy.deepcopy(self.object_place_poses)
+            place_pose_offset = place_pose_offset[req.object]
+            place_pose_offset.position.z = place_pose_offset.position.z + 0.2;
+            self.moveToPose(place_pose_offset)
+            if self.stop:
+                return
+            rospy.sleep(3.0)
+            self._gripper.command_position(0.0)
+            if self.stop:
+                return
+            self.state = STATE.IDLE
+
+
+        # otherwise run as normal
+        else
+            #-----
+            # check if collision happened yet, stop if it did
+            collision = rospy.get_param("/Collision")
+            if collision:
+                # self.stop
+                return
+            #-----
+            if self.stop:
+                return
+            print "Picking UP Object: " + req.object
+            # self._limb.set_joint_position_speed(0.2)
+            if self.stop:
+                return
+            self.state = STATE.NEUTRAL
+
+            # ---------
+            #-----
+            # check if collision happened yet, stop if it did
+            collision = rospy.get_param("/Collision")
+            if collision:
+                # self.stop
+                return
+            #-----
+            print "Moving to {} APPROACH".format(req.object)
+            rospy.sleep(3.0)
+            self.moveToPose(self.object_approach_poses[req.object])
+            if self.stop:
+                return
+            self._gripper.command_position(100.0)
+            self.state = STATE.APPROACHING
+            if self.stop:
+                return
+            rospy.sleep(3.0)
+            if self.stop:
+                return
+
+            # ---------
+            #-----
+            # check if collision happened yet, stop if it did
+            collision = rospy.get_param("/Collision")
+            if collision:
+                # self.stop
+                return
+            #-----
             print "Moving to {} PICK".format(req.object)
             self.state = STATE.PICKING
-            pick_pose_offset = copy.deepcopy(self.object_pick_poses[req.object])
-            pick_pose_offset.position.z = pick_pose_offset.position.z - 0.06;
-            pick_pose_offset.position.y = pick_pose_offset.position.y - 0.04;
-            pick_pose_offset.position.x = pick_pose_offset.position.x + 0.04;
-            self.moveToPose(pick_pose_offset)
+            self.moveToPose(self.object_pick_poses[req.object])
             if self.stop:
                 return
             self._gripper.command_position(0.0)
             self.state = STATE.PICKED
             if self.stop:
                 return
-            rospy.sleep(.5)
+            rospy.sleep(3.0)
             if self.stop:
                 return
-        else:
-            print "Moving to {} PICK".format(req.object)
-            self.state = STATE.PICKING
-            pick_pose_offset = copy.deepcopy(self.object_pick_poses[req.object])
-            pick_pose_offset.position.z = pick_pose_offset.position.z - 0.075;
-            pick_pose_offset.position.y = pick_pose_offset.position.y - 0.095;
-            pick_pose_offset.position.x = pick_pose_offset.position.x + 0.01;
-            self.moveToPose(pick_pose_offset)
+
+            # ---------
+            #-----
+            # check if collision happened yet, stop if it did
+            collision = rospy.get_param("/Collision")
+            if collision:
+                # self.stop
+                return
+            #-----
+            print "Moving to {} APPROACH".format(req.object)
+            rospy.sleep(3.0)
+            self.moveToPose(self.object_approach_poses[req.object])
             if self.stop:
                 return
+            self.state = STATE.APPROACHING
+            if self.stop:
+                return
+            rospy.sleep(3.0)
+            if self.stop:
+                return
+
+            # ---------
+            #-----
+            # check if collision happened yet, stop if it did
+            collision = rospy.get_param("/Collision")
+            if collision:
+                # self.stop
+                return
+            #-----
+            print "Placing Down Object:" + req.object
+            print "Moving to {} PLACE APPROACH".format(req.object)
+            self.state = STATE.PLACING
+            rospy.sleep(3.0)
+            if self.stop:
+                return
+            place_pose_offset = copy.deepcopy(self.object_place_poses)
+            place_pose_offset = place_pose_offset[req.object]
+            place_pose_offset.position.z = place_pose_offset.position.z + 0.2;
+            self.moveToPose(place_pose_offset)
+            rospy.sleep(3.0)
+            if self.stop:
+                return
+
+            # ---------
+            #-----
+            # check if collision happened yet, stop if it did
+            collision = rospy.get_param("/Collision")
+            if collision:
+                # self.stop
+                return
+            #-----
+            print "Moving to {} PLACE".format(req.object)
+            self.moveToPose(self.object_place_poses[req.object])
+            if self.stop:
+                return
+            self._gripper.command_position(100.0)
+            self.state = STATE.PLACED
+            if self.stop:
+                return
+            rospy.sleep(3.0)
+            if self.stop:
+                return
+
+            # ---------
+            #-----
+            # check if collision happened yet, stop if it did
+            collision = rospy.get_param("/Collision")
+            if collision:
+                # self.stop
+                return
+            #-----
+            print "Moving to {} PLACE APPROACH".format(req.object)
+            place_pose_offset = copy.deepcopy(self.object_place_poses)
+            place_pose_offset = place_pose_offset[req.object]
+            place_pose_offset.position.z = place_pose_offset.position.z + 0.2;
+            self.moveToPose(place_pose_offset)
+            if self.stop:
+                return
+            rospy.sleep(3.0)
             self._gripper.command_position(0.0)
-            self.state = STATE.PICKED
             if self.stop:
                 return
-            rospy.sleep(.5)
-            if self.stop:
-                return
-
-        # ---------
-        print "Moving to {} APPROACH".format(req.object)
-        rospy.sleep(.5)
-        pick_pose_offset = copy.deepcopy(self.object_pick_poses[req.object])
-        pick_pose_offset.position.z = pick_pose_offset.position.z + 0.2;
-        self.moveToPose(pick_pose_offset)
-        if self.stop:
-            return
-        self.state = STATE.APPROACHING
-        if self.stop:
-            return
-        rospy.sleep(.5)
-        if self.stop:
-            return
-
-        # ---------
-        print "Placing Down Object:" + req.object
-        print "Moving to {} PLACE APPROACH".format(req.object)
-        self.state = STATE.PLACING
-        rospy.sleep(.5)
-        if self.stop:
-            return
-        place_pose_offset = copy.deepcopy(self.object_place_poses)
-        place_pose_offset = place_pose_offset[req.object]
-        place_pose_offset.position.z = place_pose_offset.position.z + 0.2;
-        self.moveToPose(place_pose_offset)
-        rospy.sleep(.5)
-        if self.stop:
-            return
-
-        # ---------
-        print "Moving to {} PLACE".format(req.object)
-        self.moveToPose(self.object_place_poses[req.object])
-        if self.stop:
-            return
-        self._gripper.command_position(100.0)
-        self.state = STATE.PLACED
-        if self.stop:
-            return
-        rospy.sleep(1.0)
-        if self.stop:
-            return
-
-        # ---------
-        print "Moving to {} PLACE APPROACH".format(req.object)
-        place_pose_offset = copy.deepcopy(self.object_place_poses)
-        place_pose_offset = place_pose_offset[req.object]
-        place_pose_offset.position.z = place_pose_offset.position.z + 0.2;
-        self.moveToPose(place_pose_offset)
-        if self.stop:
-            return
-        rospy.sleep(1.0)
-        self._gripper.command_position(0.0)
-        if self.stop:
-            return
-        self.state = STATE.IDLE
+            self.state = STATE.IDLE
 
     def PickAndPlaceSendGoal(self):
         display_trajectory_publisher = rospy.Publisher(
@@ -431,19 +443,14 @@ class PickPlace(object):
         for i, object in enumerate(self.objects):
 
             # get location of pick and approach and all that from service call!
-	    
             resp1 = vision_manip( object )
-	    
             print "Object:          {}".format(object)
             print "Approach Pose:   {}".format(resp1.approach_pose)
             print "Pick Pose:       {}".format(resp1.pick_pose)
             print "Score of Grasp:  {}".format(resp1.score)
             print "Top Valid Grasp: {}".format(resp1.grasp)
-            self.object_pick_poses[self.objects[i]] = resp1.pick_pose.pose
-            self.object_approach_poses[self.objects[i]] = resp1.approach_pose.pose
-            rospy.logerr("object approach poses: ");
-            print self.object_approach_poses
-            print self.objects[i]
+            self.object_pick_poses[self.objects[self.object_calib]] = resp1.pick_pose
+            self.object_approach_poses[self.objects[self.object_calib]] = resp1.approach_pose
 
     def _find_approach(self, pose, offset):
         ikreq = SolvePositionIKRequest()
@@ -516,17 +523,12 @@ class PickPlace(object):
 
                 # read key
                 key = line.rstrip()
-                print "KEY: "
-                print key
-                print self.object_place_poses
 
                 # read into place pos at key
                 line = f.readline()
                 line = line.rstrip()
                 data = line.split(',')
                 self.object_place_poses[key] = Pose()
-                print "POSE:"
-                print self.object_place_poses
                 self.object_place_poses[key].position.x = float(data[0])
                 self.object_place_poses[key].position.y = float(data[1])
                 self.object_place_poses[key].position.z = float(data[2])
@@ -541,7 +543,7 @@ class PickPlace(object):
                 self.object_place_poses[key].orientation.w = float(data[3])
 
                 print key
-                #print self.object_pick_poses[key]
+                print self.object_pick_poses[key]
                 print self.object_place_poses[key]
 
         f.close()
@@ -562,7 +564,7 @@ class PickPlace(object):
         # write base frame id and write end-effector frame id?
         f.write('base\n' + self.side + '_gripper' + '\n')
 
-        for key in self.object_place_poses:
+        for key in self.object_pick_poses:
             # write object name
             f.write(key + '\n')
             # write place pos
@@ -579,14 +581,11 @@ class PickPlace(object):
     def PostParameters(self):
         for key in self.object_pick_poses:
             # Post param for Pick Position
-            print key
             rospy.set_param('/ObjectPositions/' + key,
                 [self.object_pick_poses[key].position.x,
                  self.object_pick_poses[key].position.y,
                  self.object_pick_poses[key].position.z])
-            x = rospy.get_param('/ObjectPositions/' + key)
-            print x
-            print "\n"
+
 
 def main():
     rospy.init_node("pick_and_place_service")
@@ -602,9 +601,9 @@ def main():
     pp = PickPlace('right_arm', 'right')
 
     # call the vision manip service
-    rospy.wait_for_service('/vision_manip')
+    rospy.wait_for_service('vision_manip')
     try:
-        conv_coord = rospy.ServiceProxy('/vision_manip', VisionManip)
+        conv_coord = rospy.ServiceProxy('vision_manip', VisionManip)
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 

@@ -21,13 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <ros/callback_queue.h>
 #include <stdint.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Bool.h>
 #include <vector>
 #include <string>
 #include <map>
 #include <fstream>
 #include "robotics_task_tree_msgs/node_types.h"
 #include "robotics_task_tree_msgs/ControlMessage.h"
-
+#include "robotics_task_tree_msgs/hold_status.h"
+#include "dialogue/Issue.h"
+#include "dialogue/Resolution.h"
+#include <pause_pkg/Stop.h>
+//typedef robotics_task_tree_msgs::hold_status holdPtr;
 namespace task_net {
 
 typedef boost::shared_ptr<robotics_task_tree_msgs::ControlMessage const>
@@ -55,23 +60,29 @@ class Node {
     State_t state,
     std::string object,
     bool use_local_callback_queue = false,
-    int mtime = 50);
+    boost::posix_time::millisec mtime = boost::posix_time::millisec(50));
   virtual ~Node();
 
   // DFS: tf fix
   virtual void init();
+
+  virtual void undoCallback(ConstControlMessagePtr_t msg);
+  virtual void dropCallback(std_msgs::String msg);
 
   virtual void Update();
   virtual void Work();
   virtual bool CheckWork();
   virtual void UndoWork();
 
-
  protected:
   virtual void Activate();
   virtual void Deactivate();
   virtual void ActivateNode(NodeId_t node);
-  virtual void DeactivateNode(NodeId_t node);
+  virtual void DeactivateNode();
+  virtual void DeactivatePeer();
+  virtual void DialogueCallback(const dialogue::Resolution::ConstPtr &msg);
+  virtual void Dialogue();
+
   virtual void Finish();
   virtual State GetState();
 
@@ -133,6 +144,7 @@ class Node {
   virtual void PublishStateToPeers();
   virtual void PublishStateToChildren();
 
+  virtual void ReleaseMutexLocs();
 
  // to call the vision manip pipeline service
  ros::ServiceClient* visManipClient_pntr;
@@ -142,6 +154,7 @@ class Node {
   std::ofstream record_file;
   NodeId_t *name_;
   State state_;
+  robotics_task_tree_msgs::hold_status hold_status_;//sd
   bool parent_done_;
   std::map<NodeBitmask, NodeId_t*, BitmaskLessThan> node_dict_;
   std::string name_id_;
@@ -158,11 +171,19 @@ class Node {
   PubList peer_pub_list_;
   ros::Publisher parent_pub_;
   ros::Publisher self_pub_;
+  ros::Publisher undo_pub_;
+  ros::Publisher init_dialogue_;
 
   // Subscribers
   ros::Subscriber children_sub_;
   ros::Subscriber peer_sub_;
   ros::Subscriber parent_sub_;
+  ros::Subscriber undo_sub_;
+  ros::Subscriber drop_sub_;
+
+  // service clients
+  ros::ServiceClient stopClient_;
+  ros::ServiceClient resetClient_;
 
   // Node handler
   ros::NodeHandle pub_nh_;
@@ -174,7 +195,7 @@ class Node {
   boost::thread *work_thread;
   boost::thread *check_thread;
   boost::thread *peer_check_thread;
-  int mtime_;
+
   // Mutex
   boost::mutex mut;
   boost::mutex work_mut;

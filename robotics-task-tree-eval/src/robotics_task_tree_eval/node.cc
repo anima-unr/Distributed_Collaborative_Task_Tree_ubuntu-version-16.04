@@ -20,12 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/date_time.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 #include "robotics_task_tree_msgs/State.h"
 #include "log.h"
 #include "vision_manip_pipeline/VisionManip.h"
+#include "table_setting_demo/pick_and_place.h"
+
 // #include <regex>
 
 namespace task_net {
@@ -35,122 +40,125 @@ namespace task_net {
 #define ACTIVATION_THESH 0.1
 #define ACTIVATION_FALLOFF 0.999f
 
+bool RESP_RECEIVED = false;
+bool FAILED_PICK = false;
+
 void PeerCheckThread(Node *node);
 
 
 //---------------
 
 float getSuitability(uint16_t node, uint8_t robot, std::string object, ros::ServiceClient *visManipClient_pntr) {
-
+  //ROS_ERROR("ENTERED SUITABILITY !!!!!!!!!!!!!!!");
+  return 0.0;
   // if not a behavior node, object will be 'N/A' -> so set suitability to be 1?!??
-  if( object.compare("N/A") == 0) {
-    ROS_INFO("Node has no object, so setting suitability to 1...");
-    return 1; //TODO JB INTEGRATION -- what should this beeeee?!?!!?
-  }
+  // if( object.compare("N/A") == 0) {
+  //   ROS_INFO("Node has no object, so setting suitability to 1...");
+  //   return 1; //TODO JB INTEGRATION -- what should this beeeee?!?!!?
+  // }
 
   // for now just strictly hard code objects for each robot.....
   // this param is only used in dummy behavior, so it does not affect THEN AND OR nodes!
 
   // define for pr2
-  if(robot == 0) {
-    // // Cup
-    // if( node == 3 ){
-    //   return 1.0;
-    // }
-    // // Sugar
-    // if( node == 5 ){
-    //   return 0.25;
-    // }
-    // // Tea
-    // if( node == 6 ){
-    //   return 1.0;
-    // }
-    // // Left_Bread
-    // if( node == 8 ){
-    //   return 0.0;
-    // }
-    // // Meat
-    // if( node == 10 ){
-    //   return 0.0;
-    // }
-    // // Lettuce
-    // if( node == 11 ){
-    //   return 0.0;
-    // }
-    // // Right_Bread
-    // if( node == 12 ){
-    //   return 0.0;
-    // }
+  //if(robot == 0) {
+  //   // Cup
+  //   if( node == 3 ){
+  //     return 1.0;
+  //   }
+  //   // Sugar
+  //   if( node == 4 ){
+  //     return 0.25;
+  //   }
+  //   // Tea
+  //   if( node == 5 ){
+  //     return 1.0;
+  //   }
+  //   // Left_Bread
+  //   if( node == 7 ){
+  //     return 0.3;
+  //   }
+  //   // Meat
+  //   if( node == 8 ){
+  //     return 0.2;
+  //   }
+  //   // Lettuce
+  //   if( node == 11 ){
+  //     return 0.0;
+  //   }
+  //   // Right_Bread
+  //   if( node == 12 ){
+  //     return 0.0;
+  //   }
 
     // instead call vision manip pipeline....
-    /*vision_manip_pipeline::VisionManip visManipSrv;
-    visManipSrv.request.obj_name = object.c_str();
-    std::cout << "Trying Object:    " << object.c_str() << '\n';
-    if(visManipClient_pntr->call(visManipSrv)){
-      // ROS_INFO("NewX: %f NewY: %f NewZ: %f", (float)srv.response.newX, (float)srv.response.newY, (float)srv.response.newZ);
-      std::cout << "Object:             " << object.c_str() << '\n';
-      std::cout << "Approach Pose:      " << visManipSrv.response.approach_pose << '\n';
-      std::cout << "Pick Pose:          " << visManipSrv.response.pick_pose << '\n';
-      std::cout << "Score of Top Grasp: " << visManipSrv.response.score << '\n';
-      std::cout << "Top Valid Grasp:    " << visManipSrv.response.grasp << '\n';
-      return visManipSrv.response.score.data;
-    }
-    else{
-      ROS_ERROR("Failed to call service vision_manip, setting score to 0 for object: %s!", object.c_str());
-      return 0.0;
-    }*/
-    return 0;
-  }
+  //   vision_manip_pipeline::VisionManip visManipSrv;
+  //   visManipSrv.request.obj_name = object.c_str();
+  //   std::cout << "Trying Object:    " << object.c_str() << '\n';
+  //   if(visManipClient_pntr->call(visManipSrv)){
+  //     // ROS_INFO("NewX: %f NewY: %f NewZ: %f", (float)srv.response.newX, (float)srv.response.newY, (float)srv.response.newZ);
+  //     std::cout << "Object:             " << object.c_str() << '\n';
+  //     std::cout << "Approach Pose:      " << visManipSrv.response.approach_pose << '\n';
+  //     std::cout << "Pick Pose:          " << visManipSrv.response.pick_pose << '\n';
+  //     std::cout << "Score of Top Grasp: " << visManipSrv.response.score << '\n';
+  //     std::cout << "Top Valid Grasp:    " << visManipSrv.response.grasp << '\n';
+  //     return visManipSrv.response.score.data;
+  //   }
+  //   else{
+  //     ROS_ERROR("Failed to call service vision_manip, setting score to 0 for object: %s!", object.c_str());
+  //     return 0.0;
+  //   }
+  // }
 
   //define for baxter
-  else if(robot == 1) {
-    // // Cup
-    // if( node == 16 ){
-    //   return 0.0;
-    // }
-    // // Sugar
-    // if( node == 18 ){
-    //   return 0.75;
-    // }
-    // // Tea
-    // if( node == 19 ){
-    //   return 0.0;
-    // }
-    // // Left_Bread
-    // if( node == 21 ){
-    //   return 1.0;
-    // }
-    // // Meat
-    // if( node == 23 ){
-    //   return 1.0;
-    // }
-    // // Lettuce
-    // if( node == 24 ){
-    //   return 1.0;
-    // }
-    // // Right_Bread
-    // if( node == 25 ){
-    //   return 1.0;
-    // }
+  // else if(robot == 1) {
+  //   // Cup
+  //   if( node == 16 ){
+  //     return 0.0;
+  //   }
+  //   // Sugar
+  //   if( node == 18 ){
+  //     return 0.75;
+  //   }
+  //   // Tea
+  //   if( node == 19 ){
+  //     return 0.0;
+  //   }
+  //   // Left_Bread
+  //   if( node == 21 ){
+  //     return 1.0;
+  //   }
+  //   // Meat
+  //   if( node == 23 ){
+  //     return 1.0;
+  //   }
+  //   // Lettuce
+  //   if( node == 24 ){
+  //     return 1.0;
+  //   }
+  //   // Right_Bread
+  //   if( node == 25 ){
+  //     return 1.0;
+  //   }
 
     // instead call vision manip pipeline....
-    vision_manip_pipeline::VisionManip visManipSrv;
-    visManipSrv.request.obj_name = object.c_str();
-    std::cout << "Trying Object:    " << object.c_str() << '\n';
-    if(visManipClient_pntr->call(visManipSrv)){
-      // ROS_INFO("NewX: %f NewY: %f NewZ: %f", (float)srv.response.newX, (float)srv.response.newY, (float)srv.response.newZ);
-      std::cout << "Object:             " << object.c_str() << '\n';
-      std::cout << "Approach Pose:      " << visManipSrv.response.approach_pose << '\n';
-      std::cout << "Pick Pose:          " << visManipSrv.response.pick_pose << '\n';
-      std::cout << "Score of Top Grasp: " << visManipSrv.response.score << '\n';
-      std::cout << "Top Valid Grasp:    " << visManipSrv.response.grasp << '\n';
-      return visManipSrv.response.score.data;
-    }
-    else{
-      ROS_ERROR("Failed to call service vision_manip, setting score to 0 for object: %s!", object.c_str());
-      return 0.0;
-    }
-  }
+    // vision_manip_pipeline::VisionManip visManipSrv;
+    // visManipSrv.request.obj_name = object.c_str();
+    // std::cout << "Trying Object:    " << object.c_str() << '\n';
+    // if(visManipClient_pntr->call(visManipSrv)){
+    //   // ROS_INFO("NewX: %f NewY: %f NewZ: %f", (float)srv.response.newX, (float)srv.response.newY, (float)srv.response.newZ);
+    //   std::cout << "Object:             " << object.c_str() << '\n';
+    //   std::cout << "Approach Pose:      " << visManipSrv.response.approach_pose << '\n';
+    //   std::cout << "Pick Pose:          " << visManipSrv.response.pick_pose << '\n';
+    //   std::cout << "Score of Top Grasp: " << visManipSrv.response.score << '\n';
+    //   std::cout << "Top Valid Grasp:    " << visManipSrv.response.grasp << '\n';
+    //   return visManipSrv.response.score.data;
+    // }
+    // else{
+    //   ROS_ERROR("Failed to call service vision_manip, setting score to 0 for object: %s!", object.c_str());
+    //   return 0.0;
+    // }
+  //}
 
 }
 
@@ -162,13 +170,12 @@ Node::Node() {
   state_.done = false;
   thread_running_ = false;
   parent_done_ = false;
-  mtime_ = 50;
 }
 
 Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
     State_t state,
     std::string object,
-    bool use_local_callback_queue, int mtime):
+    bool use_local_callback_queue, boost::posix_time::millisec mtime):
     local_("~") {
   if (use_local_callback_queue) {
     ROS_DEBUG("Local Callback Queues");
@@ -205,7 +212,7 @@ Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
   InitializeBitmasks(peers_);
   InitializeBitmasks(children_);
   InitializeBitmask(parent_);
-  mtime_ = mtime;
+
   ROS_WARN( "BITMASKS" );
 
   state_ = state;
@@ -221,6 +228,13 @@ Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
   state_.highest = name_->mask;
   state_.highest_potential = 0.0;
   thread_running_ = false;
+
+  // for obj dropped monitoring
+  hold_status_.dropped = false;
+  hold_status_.pick = false;
+  hold_status_.object_name = "N/A";
+  hold_status_.issue = "N/A";
+
 
   object_ = object;
 
@@ -251,18 +265,42 @@ Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
   InitializePublishers(children_, &children_pub_list_, "_parent");
   InitializePublishers(peers_, &peer_pub_list_, "_peer");
   InitializePublisher(parent_, &parent_pub_);
-  InitializeStatePublisher(name_, &self_pub_, "_state");
 
+  // undo function
+  // std::string tempName_ = name_->topic;
+  InitializeStatePublisher(name_, &self_pub_, "_state");
+  // name_->topic = tempName_;
+  // InitializePublisher(name_, &undo_pub_, "_undo");
+  // name_->topic = tempName_ + "_state";
+
+  init_dialogue_ = pub_nh_.advertise<dialogue::Issue>("issues", 1000);
+
+  NodeInit(mtime);
 
   ROS_WARN("END OF NODE CONSTRUCTOR");
-
 }
 
 Node::~Node() {}
 
 void Node::init()
 {
-  NodeInit(boost::posix_time::millisec(mtime_));
+
+}
+
+void Node::undoCallback(ConstControlMessagePtr_t msg) {
+  ROS_INFO("[%s]: Node::undoCallback was called!!!!\n\n\n\n\n", name_->topic.c_str());
+  boost::unique_lock<boost::mutex> lck(mut);
+  DeactivateNode();
+}
+
+void Node::dropCallback(std_msgs::String msg) {
+  ROS_ERROR("[%s]: Node::dropCallback was called!!!!", name_->topic.c_str());
+  boost::unique_lock<boost::mutex> lck(mut);
+  // ROS_INFO("Robot ID: %d", state_.owner.robot);
+
+  hold_status_.dropped = true;
+  hold_status_.issue = msg.data;
+  ROS_INFO("issue: %s", msg.data.c_str());
 }
 
 void Node::InitializeBitmask(NodeId_t * node) {
@@ -327,11 +365,7 @@ void Node::Activate() {
 
       ROS_DEBUG("NODE::Activate: peer has made it into the if statement!!!");
     if (!state_.active && !state_.done) {
-      ROS_ERROR("TOPIC!!!!!!!!!!!!!");
-      std::cout << name_->topic;
-    //  if("PLACE_3_1_014_state" == name_->topic){
-    //    return;
-    //  }
+
     //if (!state_.done) {
       if (ActivationPrecondition()) {
         ROS_INFO("Activating Node: %s", name_->topic.c_str());
@@ -339,7 +373,7 @@ void Node::Activate() {
         {
           boost::lock_guard<boost::mutex> lock(work_mut);
           state_.active = true;
-          ROS_DEBUG("State was set to true!");
+          ROS_ERROR("State was set to true!");
           // Send activation to peers to avoid race condition
           // this will publish the updated state to say I am now active
           PublishStateToPeers();
@@ -362,27 +396,138 @@ bool Node::ActivationPrecondition() {
 }
 
 void Node::Deactivate() {
-    // ROS_INFO("Node::Deactivate was called!!!!\n");
-  // if (state_.active && state_.owner == name_.c_str()) {
-  //   state_.active = false;
-  //   printf("Deactivating Node; %s\n", name_.c_str());
-  // }
+  ROS_INFO("Node::Deactivate was called!!!!\n");
+  //ros::Duration(10).sleep();
+  // undo current node
+  if(state_.active || state_.done) {
+    state_.active = false;
+    state_.done = false;
+    state_.activation_level = 1000.0f;
+    state_.activation_potential = 1000.0f;
+  }
 
-  // TODO kill all subscribers
+  DeactivatePeer();
+
+  ROS_WARN("Work thread is being unlocked");
+  work_mut.unlock();
+  delete work_thread;
+  work_thread = new boost::thread(&WorkThread, this);
+  ROS_WARN("Work thread was terminated and then restarted");
+
 }
 
 void Node::ActivateNode(NodeId_t node) {
   // ROS_INFO("Node::ActivateNode was called!!!!\n");
 }
 
-void Node::DeactivateNode(NodeId_t node) {
-      // ROS_INFO("Node::DeactivateNode was called!!!!\n");
+void Node::DeactivateNode() {
+      ROS_INFO("Node::DeactivateNode was called!!!!\n");
+      // thread_running_ = true;
+      // // pause architecture
+      // boost::thread *pause_thread = new boost::thread(&Node::Deactivate, this);
+      // // wait until node is deactivated to continue
+      // pause_thread->join();
+      Deactivate();
+
+      // set peerUndone to false, and temp to false
+      return;
+}
+
+void Node::DeactivatePeer() {
+  boost::shared_ptr<ControlMessage_t> msg(new ControlMessage_t);
+  msg->sender = mask_;
+  msg->activation_level = state_.activation_level;
+  msg->activation_potential = state_.activation_potential;
+  msg->done = state_.done;
+  msg->active = state_.active;
+  msg->parent_type = state_.parent_type;
+  msg->peerUndone = true;
+
+  // publish to all peers
+  for (PubList::iterator it = peer_pub_list_.begin();
+      it != peer_pub_list_.end(); ++it) {
+    it->publish(msg);
+  }
+}
+
+void Node::ReleaseMutexLocs() {
+  // don't release the mutex here
+  return;
+}
+
+
+void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
+  RESP_RECEIVED = true;
+  FAILED_PICK = true;
+
+  // if msg true - set node to done (person placed it)
+  if(msg->method == "human_pick_and_place" || msg->method == "human_position_obj") {
+    state_.active = false;
+    state_.done = true;
+    state_.activation_level = 0.0f;
+    state_.activation_potential = 0.0f;
+  }
+  else if( msg->method == "positioning_done") {
+    ROS_WARN("Dialogue finished, positioning_done");
+    state_.active = false;
+    state_.done = true;
+    state_.activation_level = 0.0f;
+    state_.activation_potential = 0.0f;
+  }
+  else if( msg->method == "human_handed_object") {
+    table_setting_demo::pick_and_place msg;
+    msg.request.object = object_;
+    ros::param::set("/OutOfBounds", true);
+    if (ros::service::call("pick_and_place_object", msg)) {
+    }
+    ROS_WARN("Serivce call made from dialogue, sleeping for 30 seconds");
+    ros::Duration(35).sleep();
+    state_.active = false;
+    state_.done = true;
+    state_.activation_level = 0.0f;
+    state_.activation_potential = 0.0f;
+}
+
+  // otherwise undo node (person did not help)
+  else {
+    DeactivateNode();
+  }
+
+  //unlock the mutex becuase work completed???? Either human placed or robot needs to restart so...
+  ROS_WARN("Dialogue finished, releasing mutex");
+  // work_mut.unlock();
+  ReleaseMutexLocs();
+}
+
+void Node::Dialogue() {
+  // pause moveit
+  ROS_WARN("NODE::DOIALOGUE got calledddd here");
+
+  // publish to initialize dalogue
+  dialogue::Issue msg;
+  msg.issue = hold_status_.issue;
+  msg.object = object_;
+  msg.robot_id = state_.owner.robot;
+
+  ROS_WARN("NODE::DOIALOGUE is publishing the issue: %s", msg.issue.c_str());
+  init_dialogue_.publish(msg);
+  ros::spinOnce();
+
+  ros::Subscriber dialogue_resp_sub = pub_nh_.subscribe<dialogue::Resolution>("resolution", 1000, &Node::DialogueCallback, this);
+  ROS_INFO("IN dialogue while loop!\n");
+  // wait for response
+  while(!RESP_RECEIVED) {
+    ros::spinOnce();
+    // ROS_INFO("IN dialogue while loop!\n");
+  }
+  RESP_RECEIVED = false;
+  hold_status_.dropped = false;
 }
 
 void Node::Finish() {
       ROS_INFO("Node::Finish was called!!!!\n");
 
-  Deactivate();
+  //Deactivate();
   state_.done = true;
 }
 
@@ -463,8 +608,6 @@ void Node::ReceiveFromChildren(ConstControlMessagePtr_t msg) {
   child->state.highest.node = msg->highest.node;
   child->state.highest.type = msg->highest.type;
   child->state.highest.robot = msg->highest.robot;
-  // ROS_INFO("child->state.activation_level %f", child->state.activation_level);
-  // ROS_INFO("child->state.activation_potential %f", child->state.activation_potential);
   child->state.active = msg->active;
 }
 
@@ -497,6 +640,15 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
     state_.peer_active = msg->active;
     state_.peer_done = msg->done;
   }
+  // undo function
+  if(msg->peerUndone) {
+    state_.peer_active = false;
+    state_.peer_done = false;
+  }
+  if(msg->collision) {
+    hold_status_.dropped = true;
+    hold_status_.issue = "collision";
+  }
   state_.done = state_.done || state_.peer_done;
   // ROS_INFO("OTHER, set msg based on peer lists!!! %d\n\n", state_.peer_active);
 }
@@ -504,7 +656,7 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
 // Main Loop of Update Thread. spins once every mtime milliseconds
 void UpdateThread(Node *node, boost::posix_time::millisec mtime) {
     ROS_DEBUG("Node::UpdateThread was called!!!!");
-    boost::this_thread::sleep(mtime);
+    sleep(5);
   while (true) {
     node->Update();
     boost::this_thread::sleep(mtime);
@@ -528,17 +680,27 @@ void WorkThread(Node *node) {
   // Process Data
   node->working = true;
   node->Work();
-  boost::unique_lock<boost::mutex> lck(node->mut);
-  node->state_.active = false;
-  node->state_.done = true;
-  node->working = false;
-  node->PublishDoneParent();
-  node->PublishStateToPeers();
 
-  // int sleepTime = 200 + (75*node->mask_.robot);
-  // boost::this_thread::sleep(boost::posix_time::millisec(sleepTime));
-  // ROS_INFO("Sleeping for %d", sleepTime);
-  ROS_INFO("[%s]: Work Thread has ended", node->name_->topic.c_str() );
+  if ( !FAILED_PICK )
+  {
+    ROS_WARN("Work thread is ending becuase pick worked\n\n\n");
+    ROS_WARN("     Object was %s", node->object_.c_str());
+    boost::unique_lock<boost::mutex> lck(node->mut);
+    node->state_.active = false;
+    node->state_.done = true;
+    node->working = false;
+    FAILED_PICK = false;
+  }
+  else{
+    ROS_WARN("Work thread is ending becuase issue was found");
+ }
+node->PublishDoneParent();
+node->PublishStateToPeers();
+
+// int sleepTime = 200 + (75*node->mask_.robot);
+// boost::this_thread::sleep(boost::posix_time::millisec(sleepTime));
+// ROS_INFO("Sleeping for %d", sleepTime);
+ROS_INFO("[%s]: Work Thread has ended", node->name_->topic.c_str() );
 }
 
 // TODO JB: implementation for peer thread!
@@ -713,7 +875,7 @@ void Node::NodeInit(boost::posix_time::millisec mtime) {
   // peer_check_thread  = new boost::thread(&PeerCheckThread, this);
 
   // Initialize recording Thread
-  std::string filename = "/home/mzagainova/catkin_ws/src/Distributed_Collaborative_Task_Tree/Data/" + name_->topic + "_Data_.csv";
+  std::string filename = "/home/anima/catkin_workspace/src/Distributed_Collaborative_Task_Tree/Data/" + name_->topic + "_Data_.csv";
   ROS_INFO("Creating Data File: %s", filename.c_str());
   record_file.open(filename.c_str());
   record_file.precision(15);
@@ -743,6 +905,13 @@ void Node::Update() {
 
     // Check Activation Level
     if (IsActive()) {
+      // check in object has been dropped
+      if(hold_status_.dropped) {
+        // pause architecture
+        ROS_ERROR("Hold_status dropped is true, launching dialogue node!!!"); // why is this not getting printed out????
+        boost::thread *pause_thread = new boost::thread(&Node::Dialogue, this);
+        pause_thread->join();
+      }
       // Check Preconditions
       if (Precondition()) {
         ROS_DEBUG("[%s]: Preconditions Satisfied Safe To Do Work!",
@@ -833,6 +1002,8 @@ void Node::PublishStateToPeers() {
   msg->done = state_.done;
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
+  msg->collsion = state_.collsion;
+  msg->peerUndone = false;
 
   for (PubList::iterator it = peer_pub_list_.begin();
       it != peer_pub_list_.end(); ++it) {
@@ -946,6 +1117,20 @@ void Node::InitializeSubscriber(NodeId_t *node) {
   parent_sub_ = sub_nh_.subscribe(parent_topic,
     PUB_SUB_QUEUE_SIZE,
     &Node::ReceiveFromParent,
+    this);
+  //std::string undo_topic = node->topic + "_undo";
+  // std::string undo_topic = object_ + "_undo";
+  // ROS_INFO("[SUBSCRIBER] - Creating UNDO Topic: %s", undo_topic.c_str());
+  // undo_sub_ = sub_nh_.subscribe(undo_topic,
+  //   PUB_SUB_QUEUE_SIZE,
+  //   &Node::undoCallback,
+  //   this);
+  // std::string drop_topic = node->topic + "_dropped";
+  std::string drop_topic = object_ + "_dropped";
+  ROS_INFO("[SUBSCRIBER] - Creating objDropListener Topic: %s", drop_topic.c_str());
+  drop_sub_ = sub_nh_.subscribe(drop_topic,
+    PUB_SUB_QUEUE_SIZE,
+    &Node::dropCallback,
     this);
 }
 void Node::InitializePublishers(NodeListPtr nodes, PubList *pub,

@@ -9,3 +9,5 @@ NodeBitmask highest
 float32 highest_potential
 int32 parent_type
 float32 suitability
+bool collision
+bool peerUndone
