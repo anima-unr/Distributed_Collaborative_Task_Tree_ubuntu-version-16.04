@@ -679,6 +679,7 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
     state_.peer_active = false;
     state_.peer_done = false;
   state_.done = state_.done || state_.peer_done;
+  }
   // ROS_INFO("OTHER, set msg based on peer lists!!! %d\n\n", state_.peer_active);
 }
 
