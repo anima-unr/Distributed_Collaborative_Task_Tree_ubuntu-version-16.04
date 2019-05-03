@@ -227,6 +227,7 @@ Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
   state_.peer_okay = false;
   state_.highest = name_->mask;
   state_.highest_potential = 0.0;
+  //state_.peerPlacing = false;
   thread_running_ = false;
 
   // for obj dropped monitoring
@@ -441,6 +442,8 @@ void Node::DeactivatePeer() {
   msg->done = state_.done;
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
+  msg->collision = state_.collision;
+  //msg->peerPlacing = state_.peerPlacing;
   msg->peerUndone = true;
 
   // publish to all peers
@@ -466,6 +469,11 @@ void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
     state_.done = true;
     state_.activation_level = 0.0f;
     state_.activation_potential = 0.0f;
+    //state_.peerPlacing = true;
+    ros::param::set("/Collision", true);
+    PublishStateToPeers();
+    ros::Duration(1).sleep();
+    //state_.peerPlacing = false;
   }
   else if( msg->method == "positioning_done") {
     ROS_WARN("Dialogue finished, positioning_done");
@@ -474,7 +482,7 @@ void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
     state_.activation_level = 0.0f;
     state_.activation_potential = 0.0f;
   }
-  else if( msg->method == "human_handed_object") {
+  else if( msg->method == "human_handed_object" ) {
     table_setting_demo::pick_and_place msg;
     msg.request.object = object_;
     ros::param::set("/OutOfBounds", true);
@@ -486,7 +494,20 @@ void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
     state_.done = true;
     state_.activation_level = 0.0f;
     state_.activation_potential = 0.0f;
-}
+  }
+  else if (msg->method == "robot_pick_and_place") {
+    table_setting_demo::pick_and_place msg;
+    msg.request.object = object_;
+    ros::param::set("/Collision", true);
+    if (ros::service::call("pick_and_place_object", msg)) {
+    }
+    ROS_WARN("Serivce call made from dialogue, sleeping for 30 seconds");
+    ros::Duration(90).sleep();
+    state_.active = false;
+    state_.done = true;
+    state_.activation_level = 0.0f;
+    state_.activation_potential = 0.0f;
+  }
 
   // otherwise undo node (person did not help)
   else {
@@ -648,6 +669,12 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
   if(msg->collision) {
     hold_status_.dropped = true;
     hold_status_.issue = "collision";
+  }
+  if(msg->peerPlacing) {
+    state_.done = false;
+    state_.active = true;
+    state_.peer_active = false;
+    state_.peer_done = false;
   }
   state_.done = state_.done || state_.peer_done;
   // ROS_INFO("OTHER, set msg based on peer lists!!! %d\n\n", state_.peer_active);
@@ -1002,7 +1029,8 @@ void Node::PublishStateToPeers() {
   msg->done = state_.done;
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
-  msg->collsion = state_.collsion;
+  msg->collision = state_.collision;
+//  msg->peerPlacing = state_.peerPlacing;
   msg->peerUndone = false;
 
   for (PubList::iterator it = peer_pub_list_.begin();
@@ -1020,6 +1048,8 @@ void Node::PublishStateToChildren() {
   msg->done = state_.done;
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
+  msg->collision = state_.collision;
+//  msg->peerPlacing = state_.peerPlacing;
 
   for (PubList::iterator it = children_pub_list_.begin();
       it != children_pub_list_.end(); ++it) {
