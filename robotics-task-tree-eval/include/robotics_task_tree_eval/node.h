@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "robotics_task_tree_msgs/hold_status.h"
 #include "dialogue/Issue.h"
 #include "dialogue/Resolution.h"
-#include <pause_pkg/Stop.h>
+//#include <pause_pkg/Stop.h>
 //typedef robotics_task_tree_msgs::hold_status holdPtr;
 namespace task_net {
 
@@ -73,6 +73,7 @@ class Node {
   virtual void Work();
   virtual bool CheckWork();
   virtual void UndoWork();
+  virtual void PublishStateToPeers();
 
  protected:
   virtual void Activate();
@@ -141,7 +142,6 @@ class Node {
   virtual void InitializeBitmasks(NodeListPtr nodes);
   virtual bool ActivationPrecondition();
   virtual void ActivationFalloff();
-  virtual void PublishStateToPeers();
   virtual void PublishStateToChildren();
 
   virtual void ReleaseMutexLocs();

@@ -53,6 +53,7 @@ add_message_files(
   State.msg
   NodeBitmask.msg
   ControlMessage.msg
+  ObjStatus.msg
 )
 
 ## Generate services in the 'srv' folder

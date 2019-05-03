@@ -678,6 +678,7 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
     state_.active = true;
     state_.peer_active = false;
     state_.peer_done = false;
+  }
   state_.done = state_.done || state_.peer_done;
   // ROS_INFO("OTHER, set msg based on peer lists!!! %d\n\n", state_.peer_active);
 }
@@ -1033,8 +1034,10 @@ void Node::PublishStateToPeers() {
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
   msg->collision = state_.collision;
-  msg->peerPlacing = state_.peerPlacing;
-
+<<<<<<< HEAD
+=======
+//  msg->peerPlacing = state_.peerPlacing;
+>>>>>>> 62c556134533019be0a3bdf17f281d27274d404c
   msg->peerUndone = false;
 
   for (PubList::iterator it = peer_pub_list_.begin();
@@ -1053,8 +1056,10 @@ void Node::PublishStateToChildren() {
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
   msg->collision = state_.collision;
-  msg->peerPlacing = state_.peerPlacing;
-
+<<<<<<< HEAD
+=======
+//  msg->peerPlacing = state_.peerPlacing;
+>>>>>>> 62c556134533019be0a3bdf17f281d27274d404c
 
   for (PubList::iterator it = children_pub_list_.begin();
       it != children_pub_list_.end(); ++it) {

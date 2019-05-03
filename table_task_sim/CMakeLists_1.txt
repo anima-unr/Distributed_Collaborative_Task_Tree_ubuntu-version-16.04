@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robotics_task_tree_msgs)
+project(table_task_sim)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -10,12 +10,16 @@ project(robotics_task_tree_msgs)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  std_msgs
+  visualization_msgs
+  geometry_msgs
   message_generation
+  robotics_task_tree_eval
+  remote_mutex
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+#find_package(yaml-cpp REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -48,21 +52,20 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  State.msg
-  NodeBitmask.msg
-  ControlMessage.msg
-  ObjStatus.msg
-  hold_status.msg
-)
+ add_message_files(
+   FILES
+   Object.msg
+   Robot.msg
+   SimState.msg
+ )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+ add_service_files(
+   FILES
+   PickUpObject.srv
+   PlaceObject.srv
+   #Service2.srv
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -74,7 +77,8 @@ add_message_files(
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
-   std_msgs
+   visualization_msgs
+   geometry_msgs
  )
 
 ################################################
@@ -108,9 +112,9 @@ add_message_files(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES robotics_task_tree_msgs
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
-#  DEPENDS system_lib
+#  LIBRARIES table_task_sim
+  CATKIN_DEPENDS roscpp rospy visualization_msgs message_runtime robotics_task_tree_eval remote_mutex
+  DEPENDS yaml-cpp
 )
 
 ###########
@@ -120,13 +124,13 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/robotics_task_tree_msgs.cpp
+#   src/${PROJECT_NAME}/table_task_sim.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -137,7 +141,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/robotics_task_tree_msgs_node.cpp)
+ add_executable(${PROJECT_NAME}_node
+  src/table_sim_node.cc
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -147,12 +153,31 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(${PROJECT_NAME}_node
+   ${catkin_LIBRARIES} yaml-cpp
+ )
+
+
+# dummy multi  
+  add_executable(dummy_multi_demo
+    src/dummy_multi_network.cc
+    src/dummy_behavior.cc
+  )
+
+  add_dependencies(dummy_multi_demo ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+  target_link_libraries(dummy_multi_demo
+    ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
+  )
+
+  #add_dependencies(dummy_multi_demo
+  #  table_setting_demo_generate_messages_cpp
+  #)
+
 
 #############
 ## Install ##
@@ -194,7 +219,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robotics_task_tree_msgs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_table_task_sim.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

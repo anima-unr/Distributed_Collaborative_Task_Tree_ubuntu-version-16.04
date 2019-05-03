@@ -72,7 +72,9 @@ class NodePeerConnectionInterface:
         self.buf = ''
         self.pub = self.CreateZMQPub()
 
+
     def InitializeSubscriber(self, name):
+        #print 'setting up subscriber:2'
         if self.debug != 0 :
             print 'setting up subscriber: %s'%(name)
         # Setup peer listener
@@ -86,13 +88,14 @@ class NodePeerConnectionInterface:
             print 'setting up publisher: %s'%(name)
         # setup peer publisher
         topic = '%s%s'%(name, '_peer')
+        #print(topic)
         self.ros_pubs[topic] = rospy.Publisher(topic, ControlMessage, queue_size=5)
 
         # setup zeromq subscriber
         self.subs[topic] = self.CreateZMQSub(topic, self.SendToPeer)
 
     def ReceiveFromPeer(self, msg, topic):
-        #print 'setting up subscriber:5'
+        #print 'setting up subscriber:4'
         # Publish to server
         if self.debug != 0:
             print 'Received from peer topic: %s'%(topic)
@@ -103,6 +106,7 @@ class NodePeerConnectionInterface:
 
 
     def SendToPeer(self, msg, topic):
+        #print 'setting up subscriber:5'
         if self.debug != 0:
             print 'send to peer topic: %s'%(topic)
         else:
@@ -110,7 +114,9 @@ class NodePeerConnectionInterface:
         self.ros_pubs[topic].publish(pickle.loads(msg))
 
     def CreateZMQPub(self):
-        print('hello~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        #print('hello~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print(self.server_params.pub_port)
+        print 'setting up subscriber:6'
         publisher = self.context.socket(zmq.PUB)
         publisher.bind("tcp://*:%s"%(self.server_params.pub_port))
 
@@ -120,7 +126,9 @@ class NodePeerConnectionInterface:
         return publisher
 
     def CreateZMQSub(self, topic, cb):
+        #print 'setting up subscriber:7'
         subscriber = self.context.socket(zmq.SUB)
+        print(self.server_params.address)
         a = subscriber.connect("tcp://%s:%s"%(self.server_params.address, self.server_params.sub_port))
         print(a)
         if a==1:
@@ -159,17 +167,15 @@ def main():
     #server.address = 'localhost'
     running_event = threading.Event()
     running_event.set()
+    print(server.address)
     print 'Creating Nodes'
 
     node_list = rospy.get_param('~NodeList', None)
     task_file = rospy.get_param('~Nodes', None)
-
-    print node_list
-
     robot = rospy.get_param('~robot', None)
     robot = ROBOT_DICT[robot]
     debug = rospy.get_param('~debug',0)
-    print '%d'%(debug)
+    print 'debug'
 
     interface = NodePeerConnectionInterface(server, running_event, debug)
 
