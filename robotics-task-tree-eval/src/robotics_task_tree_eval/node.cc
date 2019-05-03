@@ -227,7 +227,6 @@ Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
   state_.peer_okay = false;
   state_.highest = name_->mask;
   state_.highest_potential = 0.0;
-  state_.collision = false;
   state_.peerPlacing = false;
   thread_running_ = false;
 
@@ -444,7 +443,7 @@ void Node::DeactivatePeer() {
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
   msg->collision = state_.collision;
-  //msg->peerPlacing = state_.peerPlacing;
+  msg->peerPlacing = state_.peerPlacing;
   msg->peerUndone = true;
 
   // publish to all peers
@@ -470,11 +469,11 @@ void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
     state_.done = true;
     state_.activation_level = 0.0f;
     state_.activation_potential = 0.0f;
-    //state_.peerPlacing = true;
+    state_.peerPlacing = true;
     ros::param::set("/Collision", true);
     PublishStateToPeers();
     ros::Duration(1).sleep();
-    //state_.peerPlacing = false;
+    state_.peerPlacing = false;
   }
   else if( msg->method == "positioning_done") {
     ROS_WARN("Dialogue finished, positioning_done");
@@ -667,17 +666,17 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
     state_.peer_active = false;
     state_.peer_done = false;
   }
-
-  if (msg->collision) {
-  ROS_ERROR("Collision detected!!!!\n\n");
-  hold_status_.dropped = true;
-  hold_status_.issue = "collision";
+  if(msg->collision) {
+    hold_status_.dropped = true;
+    hold_status_.issue = "collision";
   }
   if(msg->peerPlacing) {
+    ReleaseMutexLocs();
     state_.done = false;
     state_.active = true;
     state_.peer_active = false;
     state_.peer_done = false;
+  }
   state_.done = state_.done || state_.peer_done;
   // ROS_INFO("OTHER, set msg based on peer lists!!! %d\n\n", state_.peer_active);
 }
@@ -1011,7 +1010,6 @@ void Node::PublishStatus() {
   msg.highest.node = state_.highest.node;
   msg.highest_potential = state_.highest_potential;
   msg.parent_type = state_.parent_type;
-  msg.collision = state_.collision;
 
   //*msg = state_; // for some reason this doesn't work anymore
   //ROS_INFO("[%s]: PublishStatus", name_->topic.c_str() );
@@ -1034,7 +1032,6 @@ void Node::PublishStateToPeers() {
   msg->parent_type = state_.parent_type;
   msg->collision = state_.collision;
   msg->peerPlacing = state_.peerPlacing;
-
   msg->peerUndone = false;
 
   for (PubList::iterator it = peer_pub_list_.begin();
@@ -1054,7 +1051,6 @@ void Node::PublishStateToChildren() {
   msg->parent_type = state_.parent_type;
   msg->collision = state_.collision;
   msg->peerPlacing = state_.peerPlacing;
-
 
   for (PubList::iterator it = children_pub_list_.begin();
       it != children_pub_list_.end(); ++it) {
