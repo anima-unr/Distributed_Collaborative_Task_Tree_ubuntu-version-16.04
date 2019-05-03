@@ -227,6 +227,7 @@ Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
   state_.peer_okay = false;
   state_.highest = name_->mask;
   state_.highest_potential = 0.0;
+  state_.collision = false;
   thread_running_ = false;
 
   // for obj dropped monitoring
@@ -645,10 +646,11 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
     state_.peer_active = false;
     state_.peer_done = false;
   }
-  if(msg->collision) {
-    hold_status_.dropped = true;
-    hold_status_.issue = "collision";
-  }
+  if (msg->collision) {
+  ROS_ERROR("Collision detected!!!!\n\n");
+  hold_status_.dropped = true;
+  hold_status_.issue = "collision";
+}
   state_.done = state_.done || state_.peer_done;
   // ROS_INFO("OTHER, set msg based on peer lists!!! %d\n\n", state_.peer_active);
 }
@@ -982,6 +984,7 @@ void Node::PublishStatus() {
   msg.highest.node = state_.highest.node;
   msg.highest_potential = state_.highest_potential;
   msg.parent_type = state_.parent_type;
+  msg.collision = state_.collision;
 
   //*msg = state_; // for some reason this doesn't work anymore
   //ROS_INFO("[%s]: PublishStatus", name_->topic.c_str() );
@@ -1002,7 +1005,7 @@ void Node::PublishStateToPeers() {
   msg->done = state_.done;
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
-  msg->collsion = state_.collsion;
+  msg->collision = state_.collision;
   msg->peerUndone = false;
 
   for (PubList::iterator it = peer_pub_list_.begin();
@@ -1020,6 +1023,7 @@ void Node::PublishStateToChildren() {
   msg->done = state_.done;
   msg->active = state_.active;
   msg->parent_type = state_.parent_type;
+  msg->collision = state_.collision;
 
   for (PubList::iterator it = children_pub_list_.begin();
       it != children_pub_list_.end(); ++it) {
