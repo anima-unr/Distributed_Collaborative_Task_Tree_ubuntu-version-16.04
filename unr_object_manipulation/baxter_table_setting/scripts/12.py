@@ -35,13 +35,41 @@ from dialogue.msg import Resolution
 from std_msgs.msg import String
 from sound_play.libsoundplay import SoundClient
 from std_srvs.srv import Empty
-
-sound_handle=SoundClient()
-
+'''
+	getYesOrNo
+		gets a yes or no response from the keyboard
+	args:
+		none
+	returns:
+		true: if input = "yes", "y", or the return key
+		false: if response = "no", or "n"
+'''
 def getYesOrNo():
   print("PLEASE SAY YES OR NO NOW!")
 
+   # for speech stuff
+   # rospy.wait_for_service('recognizer/startSpeechPub')
+   # try:
+   #     startSpeechPub = rospy.ServiceProxy('recognizer/startSpeechPub', Empty)
+   #     # test = std_msgsEmpty()
+   #     startSpeechPub()
+   # except rospy.ServiceException, e:
+   #     print "Service call failed: %s"%e
 
+   # flag = True
+   # while(flag):
+   #      msg = rospy.wait_for_message('recognizer/output', String)
+   #      print("Msg: %s", msg)
+   #      if msg.data == "":
+   #          pass
+   #      elif msg.data == "yes":
+   #          return True
+   #      elif msg.data == "no":
+   #          return False
+   #      else:
+   #          sound_handle.say( "Invalid response! Try again!")
+
+   # for terminal
   done = False
   while not done:
     response = raw_input("(Y/n)?\n").lower()
@@ -50,36 +78,54 @@ def getYesOrNo():
     elif response== "no" or response =="n":
       return False
     else:
-      print ("invalid")
       sound_handle.say( "Invalid response! Try again!")
 
+# '''
+# dialogue
+# 	Responds to an issue topic. Through the keyboard a human and robot communicate about
+# 	how to solve a problem the robot is facing. When a solution has been found a resolution
+# 	msg is published.
+
+# args:
+# 	data: Issue.msg
+# 	pub: resolution publishing topic
+# returns:
+# 	void
+# '''
+sound_handle=SoundClient()
 def printAndSpeak(line):
-	#sound_handle.say(line)
+	sound_handle.say(line)
 	print line
 
-def dialogue(data,pub):
-  issue=data.issue
-  obj= data.object
-  msg= Resolution()
-  msg.object=obj
-  msg.robot_id=data.robot_id
-  msg.method=None
-  while(msg.method==None):
-    print("Issue is: %s", issue)
-    if issue == "collision":
+def dialogue(data, pub):
+  issue=data.issueprint "GOT TO DIALOGUE!!!!!!!"
+	obj= data.object
+	msg= Resolution()
+	msg.object=obj
+	msg.robot_id=data.robot_id
+	msg.method=None
+	while(msg.method==None):
+		print("Issue is: %s", issue)
+		if issue == "collision":
       printAndSpeak("It appears that you are going to grab the %s." % obj)
-      rospy.sleep(2) 
-      printAndSpeak("Should I grab the %s?" %(obj))
-      rospy.sleep(2)
-      if getYesOrNo():
-        msg.method="robot_pick_and_place"
-        printAndSpeak("Alright! I will pick the %s!" % (obj))
-      else:
-        msg.method = "human_pick_and_place"
-        printAndSpeak("Okay. Then please pick and place the %s. Thank you." % (obj))
-        rospy.sleep(2)
-    pub.publish(msg)
-
+    	rospy.sleep(4)
+    	printAndSpeak("Should I grab the %s?" %(obj))
+    	rospy.sleep(3)
+        if getYesOrNo():
+          msg.method="robot_pick_and_place"
+          printAndSpeak("Alright! I will pick the object!" % (obj))
+        else:
+          msg.method = "human_pick_and_place"
+          printAndSpeak("Okay. Then please pick and place the %s. Thank you." % (obj))
+	pub.publish(msg)
+# '''
+# chatter
+# 	initializes the resolution publisher, chatter node, and issues subscriber.
+# args:
+# 	none
+# returns:
+# 	none
+# '''
 def chatter():
 
   pub = rospy.Publisher('resolution', Resolution, queue_size=10)

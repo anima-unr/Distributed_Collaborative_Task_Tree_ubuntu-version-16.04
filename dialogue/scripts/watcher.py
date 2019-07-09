@@ -77,7 +77,7 @@ def dropCheck(data, pub):
         void
 '''
 def positionCheck(data, pub):
-    objects=['apple','cup','scissors', 'teddy_bear', 'clock']
+    objects=['apple','cup','scissors', 'teddy_bear', 'clock','sandwich']
     if data.obj in objects:
         pub_undo = rospy.Publisher('/' + prevholding[0] + '_dropped', String, queue_size=10)
         print prevholding[0] + '_dropped'

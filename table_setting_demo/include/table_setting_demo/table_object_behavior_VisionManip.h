@@ -61,6 +61,7 @@ class TableObject_VisionManip : public Behavior {
   virtual bool PickAndPlaceDone();
   virtual bool CheckWork();
   virtual void UndoWork();
+  virtual void ReleaseMutexLocs();
 
  protected:
   mutex::RemoteMutex mut;

@@ -84,6 +84,7 @@ void AndBehavior::UpdateActivationPotential() {
     sum += (*it)->state.activation_potential;
     if( (*it)->state.activation_potential > highest && !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active && !(*it)->state.active )
     {
+      //sum += (*it)->state.activation_potential;
       // save as the highest potential
       highest = (*it)->state.activation_potential;
       nbm.type = (*it)->state.highest.type;
@@ -94,7 +95,8 @@ void AndBehavior::UpdateActivationPotential() {
       
     }
   }
-  state_.activation_potential = sum / children_.size();
+  state_.activation_potential = highest;
+  //state_.activation_potential = sum /children_.size();
   state_.highest_potential = highest;
   state_.highest.type = nbm.type;
   state_.highest.robot = nbm.robot;

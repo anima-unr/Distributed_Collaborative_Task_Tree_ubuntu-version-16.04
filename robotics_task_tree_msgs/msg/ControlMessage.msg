@@ -12,4 +12,5 @@ NodeBitmask highest
 int32 parent_type
 bool collision
 bool peerPlacing
+bool selfPlacing
 bool peerUndone

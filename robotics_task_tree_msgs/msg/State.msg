@@ -11,4 +11,5 @@ int32 parent_type
 float32 suitability
 bool collision
 bool peerPlacing
+bool selfPlacing
 bool peerUndone

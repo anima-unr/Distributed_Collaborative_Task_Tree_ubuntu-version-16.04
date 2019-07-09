@@ -3,10 +3,6 @@ objects:
       location  : {x: 0.1, y: 0.0}
       scale     : {x: 0.05, y: 0.05, z: 0.05}
       color     : {r: 0.5, g: 0.0, b: 0.5, a: 0.9}
-    - name      : Sugar
-      location  : {x: 0.25, y: -0.25}
-      scale     : {x: 0.05, y: 0.05, z: 0.05}
-      color     : {r: 0.0, g: 0.5, b: 0.5, a: 0.9}
     - name      : Tea_Pot
       location  : {x: 0.25, y: 0.25}
       scale     : {x: 0.05, y: 0.05, z: 0.05}
@@ -15,10 +11,6 @@ objects:
       location  : {x: -0.25, y: 0.25}
       scale     : {x: 0.05, y: 0.05, z: 0.05}
       color     : {r: 0.9, g: 0.0, b: 0.0, a: 0.9}
-    - name      : Sandwich
-      location  : {x: -0.25, y: -0.25}
-      scale     : {x: 0.05, y: 0.05, z: 0.05}
-      color     : {r: 0.0, g: 0.9, b: 0.0, a: 0.9}
     - name      : Burger
       location  : {x: -0.25, y: 0.0}
       scale     : {x: 0.05, y: 0.05, z: 0.05}

@@ -89,9 +89,9 @@ static const char *static_object_str[] = {
   // // "bowl",
   "Cup",
   "Tea_Pot",
-  "Sugar",
+  //"Sugar",
   "Burger",
-  "Sandwich",
+  //"Sandwich",
   "Apple",
   //"Orange"
 };
@@ -321,13 +321,14 @@ bool TableObject_VisionManip::Precondition() {
     }
   }
 
-  if( object_ == "cup") {
-    sleep(1.0);
-    return false;
-  }
+  // if( object_ == "cup") {
+  //   sleep(1.0);
+  //   return false;
+  // }
   return true;
 }
 bool TableObject_VisionManip::ActivationPrecondition() {
+  ros::Duration(2).sleep();
   return mut.Lock(state_.activation_potential);
 }
 
@@ -363,7 +364,7 @@ void TableObject_VisionManip::Work() {
   }
   // Check if succeeded and try again
   mut.Release();
-  ROS_INFO("TableObject::Work: Released mutex!");
+  ROS_INFO("TableObject::Work: Released mutex!\n\n\n\n\n\n\n\n\n\n\n\n");//checking this line get printed 
 }
 float CalcPositionDistance_VisionManip(std::vector<float> pos_a, std::vector<float> pos_b) {
   // LOG_INFO("TX: %f TY: %f TZ: %f, 3X: %f 3Y: %f 3Z: %f", pos_a);
@@ -432,6 +433,17 @@ void TableObject_VisionManip::UndoWork() {
       LOG_INFO("SERVICE: [%s] - Not responding!", "qr_get_object_position");
     }
   }
+}
+
+// Release mutex for undo stuffs
+void TableObject_VisionManip::ReleaseMutexLocs() {
+ ROS_DEBUG("Releasing mutex from tableobjbehavior");
+
+ ROS_WARN("Releasing mutex from tableobjbehavior\n\n\n\n\n\n\n\n");
+
+ // release the Mutex for the remote mutex
+ mut.Release();
+ return;
 }
 
 }  // namespace task_net

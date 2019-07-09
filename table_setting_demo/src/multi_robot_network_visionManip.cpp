@@ -209,6 +209,7 @@ int main(int argc, char *argv[]) {
             // printf("\ttask_net::ROOT %d\n",task_net::ROOT);
             break;
         } //switch
+        ros::param::set("/Collision",false);
         if( network[i] != NULL )
         {
           network[i]->init();

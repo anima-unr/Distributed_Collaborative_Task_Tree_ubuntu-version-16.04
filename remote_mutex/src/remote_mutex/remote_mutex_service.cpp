@@ -59,13 +59,13 @@ class RemoteMutexService {
   boost::thread* record_thread;
   std::ofstream file;
   recording_toolkit::FilePrintRecorder record_object;
-  int enum_robot_;
+  int enum_robot_; 
 
   // ros info
   robotics_task_tree_msgs::State top_level_state_;
 
   explicit RemoteMutexService(const char* name)
-      : record_object("/home/mzagainova/cws_hetero_gripper/src/Distributed_Collaborative_Task_Tree/Data/remote_mutex.csv",
+      : record_object("/home/bashira/catkin_ws/src/Distributed_Collaborative_Task_Tree/Data/remote_mutex.csv",
         100) {
     locked = false;
     owner = "";
@@ -75,8 +75,8 @@ class RemoteMutexService {
       &RemoteMutexService::MutexRequest,
       this);
 
-    ns.param<std::string>( "/topic", root_topic_, "THEN_0_1_010_state");
-    ns.param<int>( "/enum_robot", enum_robot_, 1);
+    ns.param<std::string>( "/topic", root_topic_, "AND_2_0_006_state");
+    ns.param<int>( "/enum_robot", enum_robot_, 0);
     state_subscriber_ = ns.subscribe(root_topic_, 1000, &RemoteMutexService::RootStateCallback, this );
 
     record_thread = new boost::thread(&Record, this);
@@ -98,7 +98,7 @@ class RemoteMutexService {
 
   void RootStateCallback( robotics_task_tree_msgs::State msg)
   {
-    ROS_DEBUG( "RootStateCalback");
+    // ROS_INFO( "RootStateCalback");
     // get the current state variable and save it (for MutexRequest to read later)
     top_level_state_ = msg;
   }
@@ -112,23 +112,28 @@ class RemoteMutexService {
       // sleep diff rates between pr2 and baxter to offset them activating nodes at the same time...
       int offset = 75*enum_robot_;
       boost::this_thread::sleep(boost::posix_time::millisec(200+offset));
-      ROS_DEBUG("\tWAITED %d", 200+offset);
+      ROS_INFO("\tWAITED %d", 200+offset);
 
 
       ROS_INFO("asking for mutex lock [%f / %f] %s", activation_potential, req.activation_potential, req.name.c_str());
 
       if (locked) {
         res.success = false;
-        ROS_DEBUG("Mutex Already Locked - Denied Access: %s", req.name.c_str());
-      }
+        ROS_INFO("Mutex Already Locked - Denied Access: %s", req.name.c_str());
+      } 
       else {
 
         // TODO: Remove this line!
-        ROS_INFO("top_level_state_.highest.node: %d", top_level_state_.highest.node);
+        ROS_INFO("top_level_state_.highest.node: %d ", top_level_state_.highest.node);
+        std::cout<< req.name;
 
         // is this node the node that has the higest activation potential
-        if( is_eq(GetBitmask(req.name), top_level_state_.highest) )
-        {
+        printf("owner.type %d\n\n\n\n\n",top_level_state_.highest.type);
+
+        // ------------------------------------------------------
+        // HACK THE HUMAN FOR NOW!
+        if( enum_robot_ == 0 ) {
+          ROS_WARN("BUT WE ARE LOCKING ANYWAY!");
           mut.lock();
           activation_potential = req.activation_potential;
           mut.unlock();
@@ -139,7 +144,31 @@ class RemoteMutexService {
             locked = true;
             owner = req.name;
             mut.unlock();
-            res.success = true;
+            res.success = true;        
+          }
+          else
+          {
+            ROS_INFO( "Activation Potential <= 0, no lock granted");
+            res.success = false;
+          }
+        }
+        // ------------------------------------------------------
+
+        else if( is_eq(GetBitmask(req.name), top_level_state_.highest) && (top_level_state_.highest.type == 3) )
+        //if( is_eq(GetBitmask(req.name), top_level_state_.highest) )
+        {
+
+          mut.lock();
+          activation_potential = req.activation_potential;
+          mut.unlock();
+          if( activation_potential > 0.001 )
+          {
+            ROS_INFO("Mutex Locked - Granted Access: %s", req.name.c_str());
+            mut.lock();
+            locked = true;
+            owner = req.name;
+            mut.unlock();
+            res.success = true;        
           }
           else
           {
@@ -152,14 +181,14 @@ class RemoteMutexService {
           res.success = false;
         }
       }
-    }
-    else
+    } 
+    else 
     {
       ROS_INFO( "asking for mutex release: [%s / %s]", owner.c_str(), req.name.c_str());
-      if (locked)
+      if (locked) 
       {
-        if (req.name == owner)
-        {
+        //if (req.name == owner) 
+        //{
           mut.lock();
           locked = false;
           owner = "";
@@ -167,14 +196,14 @@ class RemoteMutexService {
           mut.unlock();
           res.success = true;
           ROS_INFO("Mutex Unlocked - Granted Access: %s", req.name.c_str());
-        }
-        else
-        {
-          res.success = false;
-          ROS_INFO("Mutex Locked - Denied Access: %s", req.name.c_str());
-        }
+       // } 
+        //else 
+        //{
+         // res.success = false;
+       //   ROS_INFO("Mutex Locked - Denied Access: %s", req.name.c_str());
+      //  }
       }
-      else
+      else 
       {
         res.success = false;
         ROS_INFO("Mutex Already Unlocked: %s", req.name.c_str());

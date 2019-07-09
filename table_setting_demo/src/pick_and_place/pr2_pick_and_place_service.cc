@@ -162,9 +162,9 @@ PickPlace::PickPlace(std::string arm) : arm_group_{"right_arm"}  {
   // // "bowl"
   "Cup",
   "Tea_Pot",
-  "Sugar",
+  //"Sugar",
   "Burger",
-  "Sandwich",
+  //"Sandwich",
   "Apple",
   //"Orange"
   };

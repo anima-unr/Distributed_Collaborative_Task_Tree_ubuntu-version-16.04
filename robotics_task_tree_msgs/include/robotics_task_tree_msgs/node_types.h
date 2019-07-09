@@ -74,6 +74,7 @@ struct State {
   float suitability;
   bool collision;
   bool peerPlacing;
+  bool selfPlacing;
   bool peerUndone;
 };
 
@@ -99,6 +100,7 @@ struct ControlMessage {
   int parent_type;
   bool collision;
   bool peerPlacing;
+  bool selfPlacing;
   bool peerUndone;
 };
 
@@ -264,6 +266,7 @@ struct Serializer<task_net::State_t> {
     stream.next(t.suitability);
     stream.next(t.collision);
     stream.next(t.peerPlacing);
+    stream.next(t.selfPlacing);
     stream.next(t.peerUndone);
   }
 
@@ -299,6 +302,7 @@ struct Serializer<task_net::ControlMessage_t> {
     stream.next(t.parent_type);
     stream.next(t.collision);
     stream.next(t.peerPlacing);
+    stream.next(t.selfPlacing);
     stream.next(t.peerUndone);
   }
 

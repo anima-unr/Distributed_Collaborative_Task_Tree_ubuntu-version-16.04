@@ -40,6 +40,8 @@ namespace task_net {
 #define ACTIVATION_THESH 0.1
 #define ACTIVATION_FALLOFF 0.999f
 
+int APPLEHACK = 0;
+
 bool RESP_RECEIVED = false;
 bool FAILED_PICK = false;
 
@@ -227,7 +229,9 @@ Node::Node(NodeId_t name, NodeList peers, NodeList children, NodeId_t parent,
   state_.peer_okay = false;
   state_.highest = name_->mask;
   state_.highest_potential = 0.0;
+  state_.collision = false;
   state_.peerPlacing = false;
+  state_.selfPlacing = false;
   thread_running_ = false;
 
   // for obj dropped monitoring
@@ -364,9 +368,10 @@ void Node::Activate() {
  // if thread is okay, run this??
  if(state_.peer_okay) {
 
-      ROS_DEBUG("NODE::Activate: peer has made it into the if statement!!!");
+      ROS_INFO("NODE::Activate: peer has made it into the if statement!!! %d %d",state_.selfPlacing,state_.active);
     if (!state_.active && !state_.done) {
-
+      //ActivationPrecondition();
+      //ROS_INFO("NODE::here!!! %d",ActivationPrecondition());
     //if (!state_.done) {
       if (ActivationPrecondition()) {
         ROS_INFO("Activating Node: %s", name_->topic.c_str());
@@ -386,13 +391,42 @@ void Node::Activate() {
         }
 
     }
+    else if(state_.active && state_.selfPlacing){
+      // ROS_INFO("NODE::here!!!@@ %d",ActivationPrecondition());
+      if (ActivationPrecondition()) {
+        ROS_INFO("Activating Node: %s", name_->topic.c_str());
+        // printf("\t\tNode::Activate Activating Node: %s\n\n", name_->topic.c_str());
+        {
+          boost::lock_guard<boost::mutex> lock(work_mut);
+          state_.active = true;
+          //ROS_ERROR("State was set to true!");
+          // Send activation to peers to avoid race condition
+          // this will publish the updated state to say I am now active
+          state_.selfPlacing = false;
+          ROS_ERROR("selfPlacing is true and Active is true");
+          PublishStateToPeers();
+
+        }
+        cv.notify_all();
+        // TODO JB: kill the thread now
+        // peer_check_thread->interrupt();
+        // peer_check_thread = NULL;
+
+        }
+
+
+
+    }
     state_.peer_okay = false;
     ROS_DEBUG("NODE::ACTIVATE: check peer set back to false!!!");
   }
+   //ROS_ERROR("Peer Not Okay.");
+
 }
 
 bool Node::ActivationPrecondition() {
-    // ROS_INFO("Node::ActivationPrecondition was called!!!!\n");
+     ROS_INFO("Node::ActivationPrecondition was called!!!!\n");
+     printf("activation precond\n");
   return true;
 }
 
@@ -455,6 +489,8 @@ void Node::DeactivatePeer() {
 
 void Node::ReleaseMutexLocs() {
   // don't release the mutex here
+
+  //ROS_WARN("ReleaseMutexLocs in Node.cc\n\n\n\n\n\n\n\n\n");
   return;
 }
 
@@ -462,18 +498,29 @@ void Node::ReleaseMutexLocs() {
 void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
   RESP_RECEIVED = true;
   FAILED_PICK = true;
+  ros::param::set("/Collision", true);
+  bool coll_test;
+  ros::Duration(1).sleep();
+  ros::param::get("/Collision", coll_test);
+  std::cout << "Collision is set to: " << coll_test << "\n\n\n\n\n\n\n";
+
+  // if(object_ == "Apple"){
+  //   APPLEHACK = 1;
+  // }
 
   // if msg true - set node to done (person placed it)
   if(msg->method == "human_pick_and_place" || msg->method == "human_position_obj") {
     state_.active = false;
-    state_.done = true;
+    state_.done = false;
     state_.activation_level = 0.0f;
     state_.activation_potential = 0.0f;
     state_.peerPlacing = true;
-    ros::param::set("/Collision", true);
+    // ros::param::set("/Collision", true);
     PublishStateToPeers();
     ros::Duration(1).sleep();
     state_.peerPlacing = false;
+    state_.peer_active = true;
+    ros::param::set("/Collision", false);
   }
   else if( msg->method == "positioning_done") {
     ROS_WARN("Dialogue finished, positioning_done");
@@ -498,7 +545,7 @@ void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
   else if (msg->method == "robot_pick_and_place") {
     table_setting_demo::pick_and_place msg;
     msg.request.object = object_;
-    ros::param::set("/Collision", true);
+    // ros::param::set("/Collision", true);
     if (ros::service::call("pick_and_place_object", msg)) {
     }
     ROS_WARN("Serivce call made from dialogue, sleeping for 30 seconds");
@@ -507,6 +554,7 @@ void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
     state_.done = true;
     state_.activation_level = 0.0f;
     state_.activation_potential = 0.0f;
+    ros::param::set("/Collision", false);
   }
 
   // otherwise undo node (person did not help)
@@ -516,13 +564,24 @@ void Node::DialogueCallback(const dialogue::Resolution::ConstPtr &msg) {
 
   //unlock the mutex becuase work completed???? Either human placed or robot needs to restart so...
   ROS_WARN("Dialogue finished, releasing mutex");
+  // ros::param::set("/Collision", false);
   // work_mut.unlock();
-  ReleaseMutexLocs();
+  //ReleaseMutexLocs();
+  //state_.activation_potential = 0.1f;
 }
 
 void Node::Dialogue() {
   // pause moveit
+  // if(APPLEHACK == 1) {
+  //   hold_status_.dropped = false;
+  //   return;
+  // } 
   ROS_WARN("NODE::DOIALOGUE got calledddd here");
+  ros::param::set("/Collision", true);
+  bool coll_test;
+  ros::Duration(1).sleep();
+  ros::param::get("/Collision", coll_test);
+  std::cout << "Dialogue: Collision is set to: " << coll_test << "\n\n\n\n\n\n\n";
 
   // publish to initialize dalogue
   dialogue::Issue msg;
@@ -543,6 +602,12 @@ void Node::Dialogue() {
   }
   RESP_RECEIVED = false;
   hold_status_.dropped = false;
+  ReleaseMutexLocs();
+  ros::param::set("/Collision", false);
+  //state_.activation_potential = 0.1f;
+  //state_.peer_active = true;
+  //ros::Duration(5).sleep();
+
 }
 
 void Node::Finish() {
@@ -671,14 +736,16 @@ void Node::ReceiveFromPeers(ConstControlMessagePtr_t msg) {
     hold_status_.issue = "collision";
   }
   if(msg->peerPlacing) {
-    ReleaseMutexLocs();
+    //ReleaseMutexLocs();
     state_.done = false;
     state_.active = true;
     state_.peer_active = false;
     state_.peer_done = false;
+    state_.activation_level = 100;
+    state_.selfPlacing = true;
+
   }
   state_.done = state_.done || state_.peer_done;
-  }
   // ROS_INFO("OTHER, set msg based on peer lists!!! %d\n\n", state_.peer_active);
 }
 
@@ -710,7 +777,7 @@ void WorkThread(Node *node) {
   node->working = true;
   node->Work();
 
-  if ( !FAILED_PICK )
+  if ( !FAILED_PICK ) // if did not fail pick i.e. if failed_pick == false
   {
     ROS_WARN("Work thread is ending becuase pick worked\n\n\n");
     ROS_WARN("     Object was %s", node->object_.c_str());
@@ -718,10 +785,21 @@ void WorkThread(Node *node) {
     node->state_.active = false;
     node->state_.done = true;
     node->working = false;
-    FAILED_PICK = false;
   }
   else{
+    // Hakcity hack hack
+    //  even though we are releasing the mutex from a collision object, the work thread is never ended
+    //  so the next object is using the work thread from the previous object that had a collision,
+    //  which means this section of code is only entered after the robot completes the place from the next object
+    //  so for now we are hard coding the state active and done messages here to reflect this.
+    //   THIS NEEDS TO GET FIXED by INSERT_NAME!!!!!!!
+    FAILED_PICK = false;
+    node->state_.active = false;
+    node->state_.done = true;
+    node->working = false;
     ROS_WARN("Work thread is ending becuase issue was found");
+
+
  }
 node->PublishDoneParent();
 node->PublishStateToPeers();
@@ -800,6 +878,8 @@ try{
       ROS_DEBUG_NAMED("PeerCheck", "\tCurr level: %f\n", node->state_.activation_level);
       node->state_.activation_level = ACTIVATION_FALLOFF*node->state_.activation_level;
       node->state_.activation_potential = ACTIVATION_FALLOFF*node->state_.activation_potential;
+      //node->state_.activation_level = 0.1;
+      //node->state_.activation_potential = 0.1;
       ROS_DEBUG_NAMED("PeerCheck", "\tNew level: %f\n\n", node->state_.activation_level);
       // }
 
@@ -904,7 +984,7 @@ void Node::NodeInit(boost::posix_time::millisec mtime) {
   // peer_check_thread  = new boost::thread(&PeerCheckThread, this);
 
   // Initialize recording Thread
-  std::string filename = "/home/anima/catkin_workspace/src/Distributed_Collaborative_Task_Tree/Data/" + name_->topic + "_Data_.csv";
+  std::string filename = "/home/bashira/catkin_ws/src/Distributed_Collaborative_Task_Tree/Data/" + name_->topic + "_Data_.csv";
   ROS_INFO("Creating Data File: %s", filename.c_str());
   record_file.open(filename.c_str());
   record_file.precision(15);
@@ -920,6 +1000,7 @@ void Node::ActivationFalloff() {
 // time step to process node properties. Each node should run in its own thread
 void Node::Update() {
   ROS_DEBUG("[%s]: Node::Update was called!!!!", name_->topic.c_str());
+
 
   // Check if Done // check parent done status
   if (!IsDone()  ) {
@@ -943,17 +1024,26 @@ void Node::Update() {
       }
       // Check Preconditions
       if (Precondition()) {
-        ROS_DEBUG("[%s]: Preconditions Satisfied Safe To Do Work!",
+        if(name_->topic.compare("PLACE_3_0_003_state")==0){
+        ROS_ERROR("[%s]: Preconditions Satisfied Safe To Do Work!",
           name_->topic.c_str());
+      }
         Activate();
       } else {
-          ROS_DEBUG("[%s]: Preconditions Not Satisfied, Spreading Activation!",
-            name_->topic.c_str());
+
+      //   if(name_->topic.compare("PLACE_3_0_003_state")==0){
+       //   ROS_ERROR("[%s]: Preconditions Not Satisfied, Spreading Activation!",
+       //     name_->topic.c_str());
+      //  }
         SpreadActivation();
       }
       ActivationFalloff();
     }
     else {
+    //    if(name_->topic.compare("PLACE_3_0_003_state")==0){
+    //     ROS_ERROR("[%s]: Activation Below Threshold !",
+   //     name_->topic.c_str());
+   //   }
       ROS_DEBUG_THROTTLE(1, "[%s]: Not Active: %f", name_->topic.c_str(),
         state_.activation_level); }
   }
@@ -1052,6 +1142,8 @@ void Node::PublishStateToChildren() {
   msg->parent_type = state_.parent_type;
   msg->collision = state_.collision;
   msg->peerPlacing = state_.peerPlacing;
+  msg->peerUndone = false;
+
 
   for (PubList::iterator it = children_pub_list_.begin();
       it != children_pub_list_.end(); ++it) {

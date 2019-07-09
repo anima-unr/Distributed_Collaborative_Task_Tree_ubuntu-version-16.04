@@ -283,7 +283,7 @@ def GraphData(data_hash, order):
     print y_index
     print ylables
 
-    plt.title("Trial 1 - HUMAN", fontsize=24)
+    plt.title("Trial 1 - BAXTER", fontsize=24)
     plt.yticks(y_index, ylables, fontsize=24)
     plt.xticks(fontsize=24)
     plt.legend([inactive, active, working, done], ["Inactive", "Active", "Working", "Done"], loc='lower right')

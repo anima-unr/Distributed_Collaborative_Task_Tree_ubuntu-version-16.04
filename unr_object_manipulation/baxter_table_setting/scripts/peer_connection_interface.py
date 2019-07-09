@@ -155,7 +155,7 @@ def main():
     server = ServerParam
     server.sub_port = rospy.get_param('~sub_port', '5565')
     server.pub_port = rospy.get_param('~pub_port', '5566')
-    server.address = '172.20.194.20'
+    server.address = '134.197.43.10'
     #server.address = 'localhost'
     running_event = threading.Event()
     running_event.set()

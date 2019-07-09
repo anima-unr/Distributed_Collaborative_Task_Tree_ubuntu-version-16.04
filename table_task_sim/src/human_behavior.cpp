@@ -118,7 +118,7 @@ bool HumanBehavior::Precondition() {
     // ROS_INFO("AndBehavior::Precondition was called!!!!\n");
   // return true;
 
-    ROS_ERROR("%s %d %d",object_.c_str(),state_.peer_active,obj_started_);
+    //ROS_ERROR("%s %d %d",object_.c_str(),state_.peer_active,obj_started_);
 
     if(state_.peer_active == 1 && obj_started_ ==1) {
       ROS_ERROR("COLLISION IS HAPPENING FOR OBJECT = %s~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",object_.c_str());
@@ -126,6 +126,8 @@ bool HumanBehavior::Precondition() {
       this->PublishStateToPeers();
       ros::Duration(5).sleep();
       state_.collision = false;
+
+      return false;
       
     }
 
