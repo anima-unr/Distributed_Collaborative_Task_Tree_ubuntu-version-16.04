@@ -49,7 +49,7 @@ class Procedure(object):
   "A user-defined Scheme procedure."
   def __init__(self, parms, body, env):
     self.parms, self.body, self.env = parms, body, env
-  def __call__(self, *args): 
+  def __call__(self, *args):
     return eval(self.body, Env(self.parms, args, self.env))
 
 class Env(dict):
@@ -67,13 +67,13 @@ def repl(prompt='lis.py> '):
     input_ = raw_input(prompt)
     if input_:
       val = eval(parse(input_))
-      if val is not None: 
+      if val is not None:
         print(schemestr(val))
 
 def schemestr(exp):
   "Convert a Python object back into a Scheme-readable string."
   if  isinstance(exp, list):
-    return '(' + ' '.join(map(schemestr, exp)) + ')' 
+    return '(' + ' '.join(map(schemestr, exp)) + ')'
   else:
     return str(exp)
 
@@ -82,26 +82,26 @@ def standard_env():
   env = Env()
   env.update(vars(math)) # sin, cos, sqrt, pi, ...
   env.update({
-    '+':op.add, '-':op.sub, '*':op.mul, '/':op.div, 
-    '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq, 
+    '+':op.add, '-':op.sub, '*':op.mul, '/':op.div,
+    '>':op.gt, '<':op.lt, '>=':op.ge, '<=':op.le, '=':op.eq,
     'abs':     abs,
-    'append':  op.add,  
+    'append':  op.add,
     'apply':   apply,
     'begin':   lambda *x: x[-1],
     'car':     lambda x: x[0],
-    'cdr':     lambda x: x[1:], 
+    'cdr':     lambda x: x[1:],
     'cons':    lambda x,y: [x] + y,
-    'eq?':     op.is_, 
-    'equal?':  op.eq, 
-    'length':  len, 
-    'list':    lambda *x: list(x), 
-    'list?':   lambda x: isinstance(x,list), 
+    'eq?':     op.is_,
+    'equal?':  op.eq,
+    'length':  len,
+    'list':    lambda *x: list(x),
+    'list?':   lambda x: isinstance(x,list),
     'map':     map,
     'max':     max,
     'min':     min,
     'not':     op.not_,
-    'null?':   lambda x: x == [], 
-    'number?': lambda x: isinstance(x, Number),   
+    'null?':   lambda x: x == [],
+    'number?': lambda x: isinstance(x, Number),
     'procedure?': callable,
     'round':   round,
     'symbol?': lambda x: isinstance(x, Symbol),
@@ -114,7 +114,7 @@ global_env = standard_env()
 #   if isinstance(x, Symbol):      # variable reference
 #     return env[x]
 #   elif not isinstance(x, List):  # constant literal
-#     return x                
+#     return x
 #   elif x[0] == 'quote':          # (quote exp)
 #     (_, exp) = x
 #     return exp
@@ -145,7 +145,7 @@ def eval(x, env=global_env):
   if isinstance(x, Symbol):      # variable reference
     return env.find(x)[x]
   elif not isinstance(x, List):  # constant literal
-    return x                
+    return x
   elif x[0] == 'quote':          # (quote exp)
     (_, exp) = x
     return exp
@@ -173,7 +173,15 @@ if __name__ == '__main__':
   # output preorder tree traversal
 
   # Perform Depth first search
-  string = "(THEN_0_1_001 PLACE_3_1_002 (AND_3_1_003 (OR_3_1_004 PLACE_3_1_009 PLACE_3_1_010 PLACE_3_1_011) PLACE_3_1_005 PLACE_3_1_006 (THEN_0_1_007 PLACE_3_1_012 PLACE_3_1_013) PLACE_3_1_008))"
+  # string = "(THEN_0_1_001 PLACE_3_1_002 (AND_3_1_003 (OR_3_1_004 PLACE_3_1_009 PLACE_3_1_010 PLACE_3_1_011) PLACE_3_1_005 PLACE_3_1_006 (THEN_0_1_007 PLACE_3_1_012 PLACE_3_1_013) PLACE_3_1_008))"
+
+  # TEA-TIME_Baxter
+  # string =  "(AND_2_1_014 (THEN_0_1_015 PLACE_3_1_016 (AND_2_1_017 PLACE_3_1_018 PLACE_3_1_019)) (THEN_0_1_020 PLACE_3_1_021 (OR_1_1_022 PLACE_3_1_023 PLACE_3_1_024) ))"
+  # TEA-TIME_PR2
+  #string =  "(AND_2_0_001 (THEN_0_0_002 PLACE_3_0_003 (AND_2_0_004 PLACE_3_0_005 PLACE_3_0_006)) (THEN_0_0_007 PLACE_3_0_008 (OR_1_0_009 PLACE_3_0_010 PLACE_3_0_011) ))"
+  #string =  "(THEN_0_0_001 (AND_2_0_002 (PLACE_3_0_003 PLACE_3_0_004 PLACE_3_0_005)) (OR_1_0_006 (PLACE_3_0_007 PLACE_3_0_008)))"
+  string =  "(THEN_0_1_010 (AND_2_1_011 (PLACE_3_1_012 PLACE_3_1_013 PLACE_3_1_014)) (OR_1_1_015 (PLACE_3_1_016 PLACE_3_1_017)))"
+
   parse_str = parse(string)
   order = dict()
   for i, node in enumerate(DepthFirstOrder(parse_str)):

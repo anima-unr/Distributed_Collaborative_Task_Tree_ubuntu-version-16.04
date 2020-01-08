@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include "robotics_task_tree_msgs/State.h"
 #include "robotics_task_tree_msgs/ControlMessage.h"
-
+#include "robotics_task_tree_msgs/hold_status.h"
 namespace task_net {
 
 typedef enum {  // Eight possible node types
@@ -36,12 +36,13 @@ typedef enum {  // Eight possible node types
   BEHAVIOR,     // 3
   ROOT,         // 4
   PLACE,        // 5
+  BEHAVIOR_VM,  // 6
+  PICK,         //7
 } NodeTypes_t;
 
 typedef enum {  // Eight possible robots
   PR2 = 0, // 0
   BAXTER,  // 1
-  THIRD,   // 2
 } RobotTypes;
 
 struct NodeBitmask {
@@ -66,11 +67,21 @@ struct State {
   float activation_level;
   float activation_potential;
   bool peer_active;
+     bool peer_active_robot_0;
+  bool peer_active_robot_1;
+  bool peer_active_robot_2;
   bool peer_done;
   NodeBitmask highest;
   float highest_potential;
   int parent_type;
+  float suitability;
+  bool collision_pr2;
+  bool collision_baxter;
+  bool peerPlacing;
+  bool selfPlacing;
+  bool peerUndone;
 };
+
 typedef State State_t;
 
 struct NodeId {
@@ -91,7 +102,22 @@ struct ControlMessage {
   bool active;
   NodeBitmask highest;
   int parent_type;
+  bool collision_pr2;
+  bool collision_baxter;
+  bool peerPlacing;
+  bool selfPlacing;
+  bool peerUndone;
 };
+
+struct hold_status {
+   bool dropped_pr2;
+   bool dropped_baxter;
+   bool pick;
+   std::string object_name;
+   std::string issue;
+};
+
+
 
 typedef std::vector<NodeId_t> NodeList;
 typedef std::vector<NodeId_t>::iterator NodeListIterator;
@@ -241,8 +267,16 @@ struct Serializer<task_net::State_t> {
     stream.next(t.activation_level);
     stream.next(t.activation_potential);
     stream.next(t.peer_active);
+    stream.next(t.peer_active_robot_0);
+    stream.next(t.peer_active_robot_1);
+    stream.next(t.peer_active_robot_2);
     stream.next(t.peer_done);
     stream.next(t.parent_type);
+    stream.next(t.suitability);
+    stream.next(t.collision);
+    stream.next(t.peerPlacing);
+    stream.next(t.selfPlacing);
+    stream.next(t.peerUndone);
   }
 
   ROS_DECLARE_ALLINONE_SERIALIZER;
@@ -275,6 +309,11 @@ struct Serializer<task_net::ControlMessage_t> {
     stream.next(t.active);
     stream.next(t.highest);
     stream.next(t.parent_type);
+    stream.next(t.collision_pr2);
+    stream.next(t.collision_baxter);
+    stream.next(t.peerPlacing);
+    stream.next(t.selfPlacing);
+    stream.next(t.peerUndone);
   }
 
   ROS_DECLARE_ALLINONE_SERIALIZER;

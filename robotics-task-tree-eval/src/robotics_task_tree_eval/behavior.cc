@@ -30,13 +30,16 @@ Behavior::Behavior() {}
 Behavior::Behavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue,
     boost::posix_time::millisec mtime) : Node(name,
       peers,
       children,
       parent,
-      state) {  
+      state,
+      object) {  
       // printf("Behavior::Behavior WAS CALLED\n");
+  ROS_WARN("END OF BEHAVIOR CONSTRUCTOR");
 }
 Behavior::~Behavior() {}
 
@@ -48,13 +51,15 @@ AndBehavior::AndBehavior() {}
 AndBehavior::AndBehavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue,
     boost::posix_time::millisec mtime) : Behavior(name,
       peers,
       children,
       parent,
-      state) {
-        // printf("AndBehavior::AndBehavior WAS CALLED\n");
+      state,
+      object) {
+        printf("AndBehavior::AndBehavior WAS CALLED\n");
     }
 AndBehavior::~AndBehavior() {}
 
@@ -77,19 +82,49 @@ void AndBehavior::UpdateActivationPotential() {
   for (NodeListPtrIterator it = children_.begin();
       it != children_.end(); ++it) {
     sum += (*it)->state.activation_potential;
-    if( (*it)->state.activation_potential > highest && !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active && !(*it)->state.active )
+  if((*it)->state.highest.node==31){
+   // ROS_INFO("potential %f active %d done %d peer_done %d peer_active %d \n\n\n\n\n\n",(*it)->state.activation_potential,(*it)->state.active,(*it)->state.done,(*it)->state.peer_done,(*it)->state.peer_active );
+  }
+  if((*it)->state.owner.robot ==2){
+    if( (*it)->state.activation_potential > highest && !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active )
     {
+      //ROS_WARN("highest node: %d",(*it)->state.);
+      //sum += (*it)->state.activation_potential;
       // save as the highest potential
       highest = (*it)->state.activation_potential;
       nbm.type = (*it)->state.highest.type;
       nbm.robot = (*it)->state.highest.robot;
       nbm.node = (*it)->state.highest.node;
-      //ROS_INFO( "nbm mask (%02d_%1d_%03d)", nbm.type, nbm.robot, nbm.node );
+    //   if(nbm.node == 31){
+    //   ROS_INFO( "nbm mask (%02d_%1d_%03d)", nbm.type, nbm.robot, nbm.node);
+    //   ROS_INFO("%f highest %f\n\n\n\n\n\n",(*it)->state.activation_potential,highest);
+    // }
+      //nbm = (*it)->state.highest;
+      
+    }
+
+  }
+  else{
+    if( (*it)->state.activation_potential > highest && !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active && !(*it)->state.active )
+    {
+      //ROS_WARN("highest node: %d",(*it)->state.);
+      //sum += (*it)->state.activation_potential;
+      // save as the highest potential
+      highest = (*it)->state.activation_potential;
+      nbm.type = (*it)->state.highest.type;
+      nbm.robot = (*it)->state.highest.robot;
+      nbm.node = (*it)->state.highest.node;
+    //   if(nbm.node == 31){
+    //   ROS_INFO( "nbm mask (%02d_%1d_%03d)", nbm.type, nbm.robot, nbm.node);
+    //   ROS_INFO("%f highest %f\n\n\n\n\n\n",(*it)->state.activation_potential,highest);
+    // }
       //nbm = (*it)->state.highest;
       
     }
   }
-  state_.activation_potential = sum / children_.size();
+  }
+  state_.activation_potential = highest;
+  //state_.activation_potential = sum /children_.size();
   state_.highest_potential = highest;
   state_.highest.type = nbm.type;
   state_.highest.robot = nbm.robot;
@@ -114,7 +149,7 @@ uint32_t AndBehavior::SpreadActivation() {
   ControlMessagePtr_t msg(new ControlMessage_t);
   msg->type = 0;
   msg->sender = mask_;
-  msg->activation_level = 1.0f / children_.size();
+  msg->activation_level = 100.0f / children_.size();
   msg->done = false;
 
   for (NodeListPtrIterator it = children_.begin(); it != children_.end();
@@ -150,14 +185,16 @@ ThenBehavior::ThenBehavior() {}
 ThenBehavior::ThenBehavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue,
     boost::posix_time::millisec mtime) : Behavior(name,
       peers,
       children,
       parent,
-      state) {
+      state,
+      object) {
   // Initialize activation queue
-      // printf("ThenBehavior::ThenBehavior WAS CALLED\n");
+       printf("ThenBehavior::ThenBehavior WAS CALLED\n");
   for (NodeListPtrIterator it = children_.begin(); it != children_.end();
       ++it) {
     activation_queue_.push(*it);
@@ -183,15 +220,21 @@ void ThenBehavior::UpdateActivationPotential() {
 
   for (NodeListPtrIterator it = children_.begin();
       it != children_.end(); ++it) {
-    //ROS_INFO( "\t[%s]: checking [%d]: [%d|%d|%d|%d]", name_->topic.c_str(), (*it)->state.owner.node, (*it)->state.done, (*it)->state.peer_done, (*it)->state.active, (*it)->state.peer_active );
-    // find the first not done/active node
+    if((*it)->state.owner.node == 29){
+    ROS_INFO( "\t[%s]: checking [%d]: [%d|%d|%d|%d]", name_->topic.c_str(), (*it)->state.owner.node, (*it)->state.done, (*it)->state.peer_done, (*it)->state.active, (*it)->state.peer_active );
+    }// find the first not done/active node
     if( !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active )
     {
       // save as the highest potential
       highest = (*it)->state.activation_potential;
       nbm = (*it)->state.highest;
+       if(nbm.node == 29){
+      ROS_INFO( "nbm mask (%02d_%1d_%03d)", nbm.type, nbm.robot, nbm.node);
+      ROS_INFO("%f highest %f\n\n\n\n\n\n",(*it)->state.activation_potential,highest);
+    }
       break;
     }
+   
   }
 
   state_.activation_potential = highest; //sum / children_.size();
@@ -218,7 +261,7 @@ uint32_t ThenBehavior::SpreadActivation() {
     ControlMessagePtr_t msg(new ControlMessage_t);
     msg->type = 0;
     msg->sender = mask_;
-    msg->activation_level = 1.0f;
+    msg->activation_level = 100.0f;
     msg->done = false;
 
     if (activation_queue_.front()->state.done || activation_queue_.front()->state.peer_done) {
@@ -258,12 +301,14 @@ OrBehavior::OrBehavior() {}
 OrBehavior::OrBehavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue,
     boost::posix_time::millisec mtime) : Behavior(name,
       peers,
       children,
       parent,
-      state) {
+      state,
+      object) {
   seed = static_cast<uint32_t>(time(NULL));
   //random_child_selection = rand_r(&seed) % children_.size();
   // printf("OrBehavior::OrBehavior WAS CALLED\n");
@@ -326,14 +371,20 @@ void OrBehavior::UpdateActivationPotential() {
       // ROS_INFO("XXXXXXXXXXXX    CASE 1: peer active or done %d XXXXXXXXXXXX", (*it)->mask.node);
       return;
     }
-    else if((*it)->state.done || (*it)->state.active )
+    else if(((*it)->state.owner.robot!=2 ) && ((*it)->state.done || (*it)->state.active ))
     {
       state_.highest_potential = 0;
       state_.highest = mask_;
       // ROS_INFO("XXXXXXXXXXXX    CASE 2: me active or done %d XXXXXXXXXXXX", (*it)->mask.node);
       return;
     }
-    else if (value > max && !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active && !(*it)->state.active) {
+    else if ((*it)->state.owner.robot!=2 && value > max && !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active && !(*it)->state.active) {
+      max = value;
+      max_child_index = index;
+      nbm = (*it)->state.highest;
+      // ROS_INFO("XXXXXXXXXXXX    CASE 3: value>max  %d XXXXXXXXXXXX", (*it)->mask.node);
+    }
+    else if ((*it)->state.owner.robot==2 && value > max && !(*it)->state.done && !(*it)->state.peer_done && !(*it)->state.peer_active) {
       max = value;
       max_child_index = index;
       nbm = (*it)->state.highest;
@@ -371,7 +422,7 @@ uint32_t OrBehavior::SpreadActivation() {
   ControlMessagePtr_t msg(new ControlMessage_t);
   msg->type = 0;
   msg->sender = mask_;
-  msg->activation_level = 1.0f;
+  msg->activation_level = 100.0f;
   msg->done = false;
 
   for( int i = 0; i < children_.size(); i++ )
@@ -400,4 +451,3 @@ bool OrBehavior::IsDone() {
 
 
 }
-

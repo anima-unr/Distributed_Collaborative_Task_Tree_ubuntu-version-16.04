@@ -41,6 +41,7 @@ namespace task_net {
 	  bool PickAndPlaceDone();
 	  void Work();
 	  void StateCallback( table_task_sim::SimState msg);
+	  void ReleaseMutexLocs();
 	 protected:
 	  virtual bool Precondition();
 	  virtual uint32_t SpreadActivation();

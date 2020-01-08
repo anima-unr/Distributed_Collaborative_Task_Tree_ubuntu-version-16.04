@@ -1,0 +1,13 @@
+<launch>
+    <include file="$(find freenect_launch)/launch/freenect.launch">
+      <arg name="depth_registration" value="true" />
+      <arg name="load_driver" value="false" />
+      <arg name="publish_tf" value="false" />
+      <arg name="camera" value="local" />
+    </include>
+
+    <node pkg="tf" type="static_transform_publisher" name="orthographic_proj" args="0 -1 1 0 1 0 0 camera_link test 100" />
+
+</launch>
+
+

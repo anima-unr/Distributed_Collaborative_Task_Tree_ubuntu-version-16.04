@@ -1,0 +1,6 @@
+int64 x
+int64 y
+---
+float64 newX
+float64 newY
+float64 newZ

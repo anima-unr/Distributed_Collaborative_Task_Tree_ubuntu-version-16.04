@@ -174,6 +174,18 @@ include_directories(
     ${Boost_LIBRARIES}
   )
 
+  add_executable(human_multi_demo
+    src/human_multi_network.cc
+    src/human_behavior.cc
+  )
+
+  add_dependencies(human_multi_demo ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+  target_link_libraries(human_multi_demo
+    ${catkin_LIBRARIES}
+    ${Boost_LIBRARIES}
+  )
+
   #add_dependencies(dummy_multi_demo
   #  table_setting_demo_generate_messages_cpp
   #)

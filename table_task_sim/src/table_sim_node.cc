@@ -71,6 +71,19 @@ bool pick(table_task_sim::PickUpObject::Request  &req,
           table_task_sim::PickUpObject::Response &res)
 {
   //res.result = table_task_sim::PickUpObject::SUCCESS;
+	bool coll_test;
+  	//ros::Duration(1).sleep();
+  	ros::param::get("/Collision", coll_test);
+  	std::cout << "DummyBehavior_pick:Collision is set to: " << coll_test << "\n\n\n\n\n\n\n";
+
+  	ROS_WARN("in the pick!\n\n\n");
+
+  	// if(coll_test==1){
+  	// 	printf("pick:in the collision condition");
+  	// 	//res.result = 1;
+  	// 	return false;
+  	// }
+  	// else{
 	res.result = 0;
 
 	// find object with the name to use
@@ -88,7 +101,7 @@ bool pick(table_task_sim::PickUpObject::Request  &req,
 	// set robot's goal to match object
 	simstate.robots[req.robot_id].goal = simstate.objects[idx].pose;
 	float dist = 999;
-	ros::Rate loop_rate( 10 );
+	ros::Rate loop_rate( 5 );
 
 	// wait for robot to reach goal
 	do {
@@ -104,6 +117,7 @@ bool pick(table_task_sim::PickUpObject::Request  &req,
 	res.result = 0;
 	return true;
 }
+//}
 
 /**
 	place
@@ -125,6 +139,24 @@ bool pick(table_task_sim::PickUpObject::Request  &req,
 bool place(table_task_sim::PlaceObject::Request		&req,
 		   table_task_sim::PlaceObject::Response	&res)
 {
+	bool coll_test;
+  	//ros::Duration(1).sleep();
+  	ros::param::get("/Collision", coll_test);
+  	std::cout << "DummyBehavior_place:Collision is set to: " << coll_test << "\n\n\n\n\n\n\n";
+	bool coll_response;
+  	//ros::Duration(1).sleep();
+  	ros::param::get("/Collision_response", coll_response);
+  	std::cout << "DummyBehavior_place:Collision response is set to: " << coll_response << "\n\n\n\n\n\n\n";
+
+
+  	ROS_WARN("in the place!\n\n\n");
+
+  	if(coll_test==1 && coll_response==1){
+  		printf("place:in the collision condition");
+  		//res.result = 1;
+  		return false;
+  	}
+  	else{
 	if( simstate.robots[req.robot_id].holding.compare("") == 0 )
 	{
 		// not holding anything
@@ -150,6 +182,7 @@ bool place(table_task_sim::PlaceObject::Request		&req,
 	
 	res.result = 0;
 	return true;
+}
 }
 
 /**

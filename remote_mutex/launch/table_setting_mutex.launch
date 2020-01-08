@@ -1,5 +1,5 @@
 <launch>
-  <param type="str" value="AND_2_0_001_state" name="topic"/>
+  <param type="str" value="THEN_0_0_001_state" name="topic"/>
   <param type="int" value="0" name="enum_robot"/>
 
   <node name="remote_mutex" pkg="remote_mutex" type="remote_mutex_service" output="screen" args="right_arm_mutex"/>

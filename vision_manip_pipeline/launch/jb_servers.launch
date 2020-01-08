@@ -1,0 +1,20 @@
+<launch>
+  <include file="$(find darknet_ros)/launch/darknet_ros.launch" output="log">
+  </include>
+
+  <node name="jb_yolo_obj_det_server_baxter" pkg="vision_manip_pipeline" type="jb_yolo_obj_det_server.py" required="true" output="log">
+  </node>
+
+  <node name="jb_conv_coord_server_baxter" pkg="vision_manip_pipeline" type="jb_conv_coord_server" required="true" output="log">
+  </node>
+
+  <node name="jb_get_grasp_server_baxter" pkg="vision_manip_pipeline" type="jb_get_grasp_server.py" required="true" output="log">
+  </node>
+
+  <node name="jb_pub_workspace_corners_server_baxter" pkg="vision_manip_pipeline" type="jb_pub_workspace_corners_server.py" required="true" output="log">
+  </node>
+
+  <node name="jb_vision_manip_pipeline_baxter" pkg="vision_manip_pipeline" type="jb_vision_manip_pipeline_server" required="true" output="screen">
+  </node>
+
+</launch>

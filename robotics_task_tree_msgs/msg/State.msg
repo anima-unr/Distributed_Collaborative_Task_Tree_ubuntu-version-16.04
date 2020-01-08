@@ -4,7 +4,16 @@ uint8 done
 float32 activation_level
 float32 activation_potential
 uint8 peer_active
+uint8 peer_active_robot_0
+uint8 peer_active_robot_1
+uint8 peer_active_robot_2
 uint8 peer_done
 NodeBitmask highest
 float32 highest_potential
 int32 parent_type
+float32 suitability
+bool collision_pr2
+bool collision_baxter
+bool peerPlacing
+bool selfPlacing
+bool peerUndone

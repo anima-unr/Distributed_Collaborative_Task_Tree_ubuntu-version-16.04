@@ -1,0 +1,15 @@
+<launch>
+  <node name="baxter_interface" pkg="baxter_interface" type="joint_trajectory_action_server.py" required="true" output="log">
+  </node>
+
+  <include file="$(find baxter_moveit_config)/launch/demo_baxter.launch">
+    <arg right_electric_gripper="true" left_electric_gripper="true" />
+  </include>
+
+  <include file="$(find vision_manip_pipeline)/launch/vision_manip_low_traffic.launch">
+  </include>
+
+  <node name="orthoProj_baxter" pkg="vision_manip_pipeline" type="orthoProj" required="true" output="screen">
+  </node>
+
+</launch>

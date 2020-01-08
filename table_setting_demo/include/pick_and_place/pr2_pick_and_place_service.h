@@ -45,6 +45,12 @@
 #include "table_setting_demo/pick_and_place_state.h"
 #include "table_setting_demo/pick_and_place_stop.h"
 
+
+#include "vision_manip_pipeline/VisionManip.h"
+
+
+
+
 namespace pr2 {
 
 typedef enum STATE {
@@ -62,6 +68,7 @@ struct PickPlaceGoal {
   //JB TODO: arm_navigation_msgs::MoveArmGoal pick_pose;
   //JB TODO: arm_navigation_msgs::MoveArmGoal place_pose;
   geometry_msgs::Pose pick_pose;
+  geometry_msgs::Pose approach_pose;
   geometry_msgs::Pose place_pose;
 //-----
 };
@@ -107,6 +114,16 @@ class PickPlace {
   void PostParameters();
   void CalibrateObjects();
   void ReadCalibration(std::string filename);
+
+  // TODO JB_INTEGRATION
+  void OnlineDetectionsPlaces();
+  void OnlineDetectionsPicks(ros::ServiceClient *visManipClient_pntr);
+  void ReadPlaces(std::string filename);
+  void SavePlaces(std::string filename);
+  // int visionManipPipeline(std::string obj_name, ros::NodeHandle);
+  void PickAndPlaceImpl_VisionManip(std::string object);
+  bool visionManipVer = false;
+
 //-----
   /* //JB TODO:    MoveArmGoal_t GetArmPoseFromPoints(
     std::string frame_id,
@@ -141,6 +158,7 @@ class PickPlace {
   std::vector<std::string> dynamic_objects_;
   std::string arm_;
   std::map<std::string, PickPlaceGoal> object_goal_map_;
+
 
 //-----
   //JB TODO: actionlib::SimpleActionClient<arm_navigation_msgs::MoveArmAction> move_arm_;

@@ -1,5 +1,5 @@
 <launch>
-  <node name="NodeTest" pkg="table_task_sim" type="dummy_multi_demo" output="screen">
+  <node name="NodeTest" pkg="table_task_sim" type="human_multi_demo" output="screen">
     <rosparam file="$(find robotics_task_tree_eval)/test_network_FULL.yaml"/>
     <param name="robot" value="THIRD"/>
   </node>

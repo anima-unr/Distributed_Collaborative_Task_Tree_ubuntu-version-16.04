@@ -38,6 +38,7 @@ add_service_files(
   pick_and_place.srv
   pick_and_place_state.srv
   pick_and_place_stop.srv
+  
 )
 
 # add_action_files(

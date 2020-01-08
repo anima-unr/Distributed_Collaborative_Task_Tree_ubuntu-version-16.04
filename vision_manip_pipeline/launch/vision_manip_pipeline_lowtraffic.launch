@@ -1,0 +1,33 @@
+<launch>
+ <!--<arg name="rgb_camera_info" value="/camera/rgb/camera_info"/>
+ <arg name="rgb_rimg_ect" value="/camera/rgb/image_color"/>  --><!--Rectified color image-->
+ <arg name="depReg_imgrect" value="/kinect2/qhd/image_depth_rect"/>  <!--Rectified depth image-->
+ <arg name="out_cloud" value="/local/depth_registered/points"/>
+
+ <node pkg="nodelet" type="nodelet" name="standalone_nodelet" args="manager" output="screen"/>
+
+<node pkg="nodelet" type="nodelet" name="points_xyz" args="load depth_image_proc/point_cloud_xyz standalone_nodelet --no-bond" output="screen">
+   <param name="queue_size" type="int" value="50"/>
+   <param name="image_transport" value="compressedDepth" />
+
+   <!--<remap from="rgb/camera_info" to="$(arg rgb_camera_info)" />  
+   <remap from="rgb/image_rect_color" to="$(arg rgb_rimg_ect)"/>  -->
+   <remap from="image_rect" to="$(arg depReg_imgrect)"/>  
+   <remap from="points" to="$(arg out_cloud)"/>
+ </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="orthographic_proj" args="0 -1 1 0 1 0 0 base test 100" />
+
+    <!-- <node pkg="tf" type="static_transform_publisher" name="orthographic_proj_kinect" args="0.989 -0.128 -0.346 -0.286 0.299 0.659 0.628 test kinect2_ir_optical_frame 100" /> -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="orthographic_proj_kinect" args="0.989 -0.128 -0.346 -0.286 0.299 0.659 0.628 kinect2_ir_optical_frame test2 100" />  -->
+    <!-- test2 is test1 -->   
+
+	 <!-- <node pkg="tf" type="static_transform_publisher" name="orthographic_proj_kinect_rev" args="-0.131 0.996 0.324 0.286 -0.299 -0.659 0.628 test test4 100" /> -->
+	  <!-- test4 is kinect2_ir_optical_frame -->   
+
+	<!--     <node pkg="tf" type="static_transform_publisher" name="orthographic_proj_plate" args="-0.053 -0.791 0.823 0.000 1.000 0.000 0.000 test r_torso_lift_side_plate_link 100" /> -->    
+    <!-- <node pkg="tf" type="static_transform_publisher" name="orthographic_proj_plate" args="-0.053 0.791 0.823 0.000 1.000 0.000 0.000 test test3 100" /> -->
+     <!-- test3 is r_torso_lift_side_plate_link -->
+
+
+</launch>

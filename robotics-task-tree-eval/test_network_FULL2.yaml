@@ -1,0 +1,342 @@
+NodeList: ['ROOT_4_0_000', 'AND_2_0_001', 'THEN_0_0_002', 'PLACE_3_0_003', 'AND_2_0_004', 'PLACE_3_0_005', 'PLACE_3_0_006', 'THEN_0_0_007', 'PLACE_3_0_008', 'OR_1_0_009', 'PLACE_3_0_010', 'PLACE_3_0_011', 'PLACE_3_0_012',
+          'ROOT_4_1_013', 'AND_2_1_014', 'THEN_0_1_015', 'PLACE_3_1_016', 'AND_2_1_017', 'PLACE_3_1_018', 'PLACE_3_1_019', 'THEN_0_1_020', 'PLACE_3_1_021', 'OR_1_1_022', 'PLACE_3_1_023', 'PLACE_3_1_024', 'PLACE_3_1_025',
+          'ROOT_4_2_026', 'AND_2_2_027', 'THEN_0_2_028', 'PLACE_3_2_029', 'AND_2_2_030', 'PLACE_3_2_031', 'PLACE_3_2_032', 'THEN_0_2_033', 'PLACE_3_2_034', 'OR_1_2_035', 'PLACE_3_2_036', 'PLACE_3_2_037', 'PLACE_3_2_038']
+Nodes:
+  ROOT_4_0_000:
+    mask:
+      type: 4
+      robot: 0
+      node: 0
+    parent: 'NONE'
+    children: ['AND_2_0_001']
+    peers: ['ROOT_4_1_013','ROOT_4_2_026']
+  AND_2_0_001:
+    mask:
+      type: 2
+      robot: 0
+      node: 1
+    parent: ROOT_4_0_000
+    children: ['THEN_0_0_002', 'THEN_0_0_007']
+    peers: ['AND_2_1_014','AND_2_2_027']
+  THEN_0_0_002:
+    mask:
+      type: 0
+      robot: 0
+      node: 2
+    parent: AND_2_0_001
+    children: ['PLACE_3_0_003', 'AND_2_0_004']
+    peers: ['THEN_0_1_015','THEN_0_2_028']
+  PLACE_3_0_003:
+    mask:
+      type: 5
+      robot: 0
+      node: 3
+    parent: THEN_0_0_002
+    # children: ['NONE']
+    peers: ['PLACE_3_1_016','PLACE_3_2_029']
+    object: Cup
+  AND_2_0_004:
+    mask:
+      type: 2
+      robot: 0
+      node: 4
+    parent: THEN_0_0_002
+    children: ['PLACE_3_0_005', 'PLACE_3_0_006']
+    peers: ['AND_2_1_017','AND_2_2_030']
+  PLACE_3_0_005:
+    mask:
+      type: 5
+      robot: 0
+      node: 5
+    parent: AND_2_0_004
+    # children: ['NONE']
+    peers: ['PLACE_3_1_018','PLACE_3_2_031']
+    object: Sugar
+  PLACE_3_0_006:
+    mask:
+      type: 5
+      robot: 0
+      node: 6
+    parent: AND_2_0_004
+    # children: ['NONE']
+    peers: ['PLACE_3_1_019','PLACE_3_2_032']
+    object: Tea
+  THEN_0_0_007:
+    mask:
+      type: 0
+      robot: 0
+      node: 7
+    parent: AND_2_0_001
+    children: ['PLACE_3_0_008', 'OR_1_0_009', 'PLACE_3_0_012']
+    peers: ['THEN_0_1_020','THEN_0_2_033']
+  PLACE_3_0_008:
+    mask:
+      type: 5
+      robot: 0
+      node: 8
+    parent: THEN_0_0_007
+    # children: ['NONE']
+    peers: ['PLACE_3_1_021','PLACE_3_2_034']
+    object: Left_Bread
+  OR_1_0_009:
+    mask:
+      type: 1
+      robot: 0
+      node: 9
+    parent: THEN_0_0_007
+    children: ['PLACE_3_0_010', 'PLACE_3_0_011']
+    peers: ['OR_1_1_022','OR_1_2_035']
+  PLACE_3_0_010:
+    mask:
+      type: 5
+      robot: 0
+      node: 10
+    parent: OR_1_0_009
+    # children: ['NONE']
+    peers: ['PLACE_3_1_023','PLACE_3_1_024','PLACE_3_2_036','PLACE_3_2_037']
+    object: Meat
+  PLACE_3_0_011:
+    mask:
+      type: 5
+      robot: 0
+      node: 11
+    parent: OR_1_0_009
+    # children: ['NONE']
+    peers: ['PLACE_3_1_023','PLACE_3_1_024','PLACE_3_2_036','PLACE_3_2_037']
+    object: Lettuce
+  PLACE_3_0_012:
+    mask:
+      type: 5
+      robot: 0
+      node: 12
+    parent: THEN_0_0_007
+    # children: ['NONE']
+    peers: ['PLACE_3_1_025','PLACE_3_2_038']
+    object: Right_Bread
+
+# ---------------------------------------------------------------------------
+
+  ROOT_4_1_013:
+    mask:
+      type: 4
+      robot: 1
+      node: 13
+    parent: 'NONE'
+    children: ['AND_2_1_014']
+    peers: ['ROOT_4_0_000','ROOT_4_2_026']
+  AND_2_1_014:
+    mask:
+      type: 2
+      robot: 1
+      node: 14
+    parent: ROOT_4_1_013
+    children: ['THEN_0_1_015','THEN_0_1_020']
+    peers: ['AND_2_0_001','AND_2_2_027']
+  THEN_0_1_015:
+    mask:
+      type: 0
+      robot: 1
+      node: 15
+    parent: AND_2_1_014
+    children: ['PLACE_3_1_016', 'AND_2_1_017']
+    peers: ['THEN_0_0_002','THEN_0_2_028']
+  PLACE_3_1_016:
+    mask:
+      type: 5
+      robot: 1
+      node: 16
+    parent: THEN_0_1_015
+    # children: ['NONE']
+    peers: ['PLACE_3_0_003','PLACE_3_2_029']
+    object: Cup
+  AND_2_1_017:
+    mask:
+      type: 2
+      robot: 1
+      node: 17
+    parent: THEN_0_1_015
+    children: ['PLACE_3_1_018', 'PLACE_3_1_019']
+    peers: ['AND_2_0_004','AND_2_2_030']
+  PLACE_3_1_018:
+    mask:
+      type: 5
+      robot: 1
+      node: 18
+    parent: AND_2_1_017
+    # children: ['NONE']
+    peers: ['PLACE_3_0_005','PLACE_3_2_031']
+    object: Sugar
+  PLACE_3_1_019:
+    mask:
+      type: 5
+      robot: 1
+      node: 19
+    parent: AND_2_1_017
+    # children: ['NONE']
+    peers: ['PLACE_3_0_006','PLACE_3_2_032']
+    object: Tea
+  THEN_0_1_020:
+    mask:
+      type: 0
+      robot: 1
+      node: 20
+    parent: AND_2_1_014
+    children: ['PLACE_3_1_021', 'OR_1_1_022', 'PLACE_3_1_025']
+    peers: ['THEN_0_0_007','THEN_0_2_033']
+  PLACE_3_1_021:
+    mask:
+      type: 5
+      robot: 1
+      node: 21
+    parent: THEN_0_1_020
+    # children: ['NONE']
+    peers: ['PLACE_3_0_008','PLACE_3_2_034']
+    object: Left_Bread
+  OR_1_1_022:
+    mask:
+      type: 1
+      robot: 1
+      node: 22
+    parent: THEN_0_1_020
+    children: ['PLACE_3_1_023', 'PLACE_3_1_024']
+    peers: ['OR_1_0_009','OR_1_2_035']
+  PLACE_3_1_023:
+    mask:
+      type: 5
+      robot: 1
+      node: 23
+    parent: OR_1_1_022
+    # children: ['NONE']
+    peers: ['PLACE_3_0_010','PLACE_3_0_011','PLACE_3_2_036','PLACE_3_2_037']
+    object: Meat
+  PLACE_3_1_024:
+    mask:
+      type: 5
+      robot: 1
+      node: 24
+    parent: OR_1_1_022
+    # children: ['NONE']
+    peers: ['PLACE_3_0_010','PLACE_3_0_011','PLACE_3_2_036','PLACE_3_2_037']
+    object: Lettuce
+  PLACE_3_1_025:
+    mask:
+      type: 5
+      robot: 1
+      node: 25
+    parent: THEN_0_1_020
+    # children: ['NONE']
+    peers: ['PLACE_3_0_012','PLACE_3_2_038']
+    object: Right_Bread
+# ---------------------------------------------------------------------------
+
+  ROOT_4_2_026:
+    mask:
+      type: 4
+      robot: 2
+      node: 26
+    parent: 'NONE'
+    children: ['AND_2_2_027']
+    peers: ['ROOT_4_0_000','ROOT_4_1_013']
+  AND_2_2_027:
+    mask:
+      type: 2
+      robot: 2
+      node: 27
+    parent: ROOT_4_2_026
+    children: ['THEN_0_2_028', 'THEN_0_2_033']
+    peers: ['AND_2_0_001','AND_2_1_014']
+  THEN_0_2_028:
+    mask:
+      type: 0
+      robot: 2
+      node: 28
+    parent: AND_2_2_027
+    children: ['PLACE_3_2_029', 'AND_2_2_030']
+    peers: ['THEN_0_0_002','THEN_0_1_015']
+  PLACE_3_2_029:
+    mask:
+      type: 5
+      robot: 2
+      node: 29
+    parent: THEN_0_2_028
+    # children: ['NONE']
+    peers: ['PLACE_3_0_003','PLACE_3_1_016']
+    object: Cup
+  AND_2_2_030:
+    mask:
+      type: 2
+      robot: 2
+      node: 30
+    parent: THEN_0_2_028
+    children: ['PLACE_3_2_031', 'PLACE_3_2_032']
+    peers: ['AND_2_0_004','AND_2_1_017']
+  PLACE_3_2_031:
+    mask:
+      type: 5
+      robot: 2
+      node: 31
+    parent: AND_2_2_030
+    # children: ['NONE']
+    peers: ['PLACE_3_0_005','PLACE_3_1_018']
+    object: Sugar
+  PLACE_3_2_032:
+    mask:
+      type: 5
+      robot: 2
+      node: 32
+    parent: AND_2_2_030
+    # children: ['NONE']
+    peers: ['PLACE_3_0_006', 'PLACE_3_1_019']
+    object: Tea
+  THEN_0_2_033:
+    mask:
+      type: 0
+      robot: 2
+      node: 33
+    parent: AND_2_2_027
+    children: ['PLACE_3_2_034', 'OR_1_2_035', 'PLACE_3_2_038']
+    peers: ['THEN_0_0_007','THEN_0_1_020']
+  PLACE_3_2_034:
+    mask:
+      type: 5
+      robot: 2
+      node: 34
+    parent: THEN_0_2_033
+    # children: ['NONE']
+    peers: ['PLACE_3_0_008','PLACE_3_1_021']
+    object: Left_Bread
+  OR_1_2_035:
+    mask:
+      type: 1
+      robot: 2
+      node: 35
+    parent: THEN_0_2_033
+    children: ['PLACE_3_2_036', 'PLACE_3_2_037']
+    peers: ['OR_1_0_009','OR_1_1_022']
+  PLACE_3_2_036:
+    mask:
+      type: 5
+      robot: 2
+      node: 36
+    parent: OR_1_2_035
+    # children: ['NONE']
+    peers: ['PLACE_3_0_010','PLACE_3_0_011','PLACE_3_1_023','PLACE_3_1_024']
+    object: Meat
+  PLACE_3_2_037:
+    mask:
+      type: 5
+      robot: 2
+      node: 37
+    parent: OR_1_2_035
+    # children: ['NONE']
+    peers: ['PLACE_3_0_010','PLACE_3_0_011','PLACE_3_1_023','PLACE_3_1_024']
+    object: Lettuce
+  PLACE_3_2_038:
+    mask:
+      type: 5
+      robot: 2
+      node: 38
+    parent: THEN_0_2_033
+    # children: ['NONE']
+    peers: ['PLACE_3_0_012','PLACE_3_1_025']
+    object: Right_Bread

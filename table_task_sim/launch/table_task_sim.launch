@@ -1,6 +1,6 @@
 <launch>
 	<!-- load the simulator node -->
-	<node name="table_sim" pkg="table_task_sim" type="table_task_sim_node">
+	<node name="table_sim" pkg="table_task_sim" type="table_task_sim_node" output="screen">
     	<param name="filename" value="$(find table_task_sim)/config/teatime_setup.yaml" />
 	</node>
 

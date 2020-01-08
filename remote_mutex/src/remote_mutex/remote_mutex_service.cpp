@@ -65,7 +65,7 @@ class RemoteMutexService {
   robotics_task_tree_msgs::State top_level_state_;
 
   explicit RemoteMutexService(const char* name)
-      : record_object("/home/janelle/onr_ws/src/Distributed_Collaborative_Task_Tree/Data/remote_mutex.csv",
+      : record_object("/home/bashira/catkin_ws_multi/src/Distributed_Collaborative_Task_Tree/Data/remote_mutex.csv",
         100) {
     locked = false;
     owner = "";
@@ -77,6 +77,7 @@ class RemoteMutexService {
 
     ns.param<std::string>( "/topic", root_topic_, "AND_2_0_006_state");
     ns.param<int>( "/enum_robot", enum_robot_, 0);
+    ROS_INFO("%s\n\n\n\n\n\n\n\n\n",root_topic_.c_str());
     state_subscriber_ = ns.subscribe(root_topic_, 1000, &RemoteMutexService::RootStateCallback, this );
 
     record_thread = new boost::thread(&Record, this);
@@ -124,7 +125,7 @@ class RemoteMutexService {
       else {
 
         // TODO: Remove this line!
-        ROS_INFO("top_level_state_.highest.node: %d", top_level_state_.highest.node);
+        ROS_INFO("top_level_state_.highest.node: %d %d %f", top_level_state_.highest.node,top_level_state_.highest.node,top_level_state_.activation_potential);
 
         // is this node the node that has the higest activation potential
         if( is_eq(GetBitmask(req.name), top_level_state_.highest) )

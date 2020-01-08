@@ -43,6 +43,7 @@
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>robotics_task_tree_eval</build_depend>
+  <build_depend>robotics_task_tree_msgs</build_depend>
   <build_depend>remote_mutex</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>image_transport</build_depend>
@@ -65,6 +66,7 @@
   <run_depend>message_runtime</run_depend>
   <run_depend>remote_mutex</run_depend>
   <run_depend>robotics_task_tree_eval</run_depend>
+  <run_depend>robotics_task_tree_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>moveit_ros_planning_interface</run_depend>

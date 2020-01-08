@@ -21,12 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <queue>
 #include "robotics_task_tree_eval/node.h"
 #include "remote_mutex/remote_mutex.h"
-
+#include "robotics_task_tree_msgs/hold_status.h"
 enum ROBOT {
-  PR2=0,
+  PR2=0, 
   BAXTER=1,
   THIRD=2
-};
+} ;
 
 #define BEHAVIOR_SLEEP_TIME 500
 
@@ -37,10 +37,11 @@ class Behavior: public Node {
   Behavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue = false,
     boost::posix_time::millisec mtime = boost::posix_time::millisec(BEHAVIOR_SLEEP_TIME));
   virtual ~Behavior();
-
+static task_net::hold_status hold_status_dummy1_;
  private:
 };
 
@@ -50,6 +51,7 @@ class ThenBehavior: public Behavior {
   ThenBehavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue = false,
     boost::posix_time::millisec mtime = boost::posix_time::millisec(BEHAVIOR_SLEEP_TIME));
   virtual ~ThenBehavior();
@@ -67,6 +69,7 @@ class AndBehavior: public Behavior {
   AndBehavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue = false,
     boost::posix_time::millisec mtime = boost::posix_time::millisec(BEHAVIOR_SLEEP_TIME));
   virtual ~AndBehavior();
@@ -82,6 +85,7 @@ class OrBehavior: public Behavior {
   OrBehavior(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
+    std::string object,
     bool use_local_callback_queue = false,
     boost::posix_time::millisec mtime = boost::posix_time::millisec(BEHAVIOR_SLEEP_TIME));
   virtual ~OrBehavior();

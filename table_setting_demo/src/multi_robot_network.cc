@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef std::vector<std::string> NodeParam;
 // enum ROBOT {
-//   PR2=0,
+//   PR2=0, 
 //   BAXTER=1
 // } ;
 
@@ -60,19 +60,16 @@ int main(int argc, char *argv[]) {
   std::vector<float> neutral_object_pos;
   std::vector<float> object_pos;
 
-
-  // get the robot
+  
+  // get the robot  
   std::string Robot;
   nh_.getParam("robot", Robot);
   ROBOT robot_des;
   if(Robot == "PR2") {
     robot_des = PR2;
   }
-  else if(Robot == "BAXTER"){
+  else {
     robot_des = BAXTER;
-  }
-  else{
-    robot_des = THIRD;
   }
 
   if (nh_.getParam("NodeList", nodes)) {
@@ -96,10 +93,10 @@ int main(int argc, char *argv[]) {
     int robot;
     if (nh_.getParam((param_prefix + nodes[i] + "/mask/robot").c_str(), robot)) {
       if(robot == robot_des) {
-
+      
         printf("Creating Task Node for:\n");
         printf("\tname: %s\n", name_param.topic.c_str());
-        // get parent
+        // get parent 
         if (nh_.getParam((param_prefix + nodes[i]
             + "/" + param_ext_parent).c_str(), parent_param.topic)) {
           printf("Node: %s Parent: %s\n", nodes[i].c_str(), parent_param.topic.c_str());
@@ -145,6 +142,7 @@ int main(int argc, char *argv[]) {
                                         children_param,
                                         parent_param,
                                         state,
+                                        "N/A",
                                         false);
             // printf("\ttask_net::THEN %d\n",task_net::THEN);
             break;
@@ -154,6 +152,7 @@ int main(int argc, char *argv[]) {
                                         children_param,
                                         parent_param,
                                         state,
+                                        "N/A",
                                         false);
             // printf("\ttask_net::OR %d\n",task_net::OR);
             break;
@@ -163,6 +162,7 @@ int main(int argc, char *argv[]) {
                                         children_param,
                                         parent_param,
                                         state,
+                                        "N/A",
                                         false);
             // printf("\ttask_net::AND %d\n",task_net::AND);
             break;

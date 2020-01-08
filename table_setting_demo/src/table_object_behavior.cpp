@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <cmath>
-#include "log.h"
+#include "table_setting_demo/log.h"
 #include "table_setting_demo/table_object_behavior.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/Pose.h"
@@ -80,8 +80,8 @@ TableObject::TableObject() {}
 TableObject::TableObject(NodeId_t name, NodeList peers, NodeList children,
     NodeId_t parent,
     State_t state,
-    std::string mutex_topic,
     std::string object,
+    std::string mutex_topic,
     std::vector<float> pos,
     std::vector<float> neutral_pos,
     bool use_local_callback_queue,
@@ -89,7 +89,8 @@ TableObject::TableObject(NodeId_t name, NodeList peers, NodeList children,
       peers,
       children,
       parent,
-      state), mut(name.topic.c_str(), mutex_topic), nh_(), tf_listener_() {
+      state,
+      object), mut(name.topic.c_str(), mutex_topic), nh_(), tf_listener_() {
 
   // flag saying whether the ROS publishers/listeners have been created
   ready_to_publish_ = false;
@@ -100,7 +101,7 @@ TableObject::TableObject(NodeId_t name, NodeList peers, NodeList children,
   neutral_object_pos = neutral_pos;
   object_id_ = "";
 
-ROS_INFO("MADE IT HERE!!!!!!\n\n");
+// ROS_INFO("MADE IT HERE!!!!!!\n\n");
 
   // check if dynamic object
   std::vector<std::string> static_objects_ = std::vector<std::string>(

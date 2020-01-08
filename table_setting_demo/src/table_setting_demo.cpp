@@ -100,6 +100,7 @@ class TableSetting {
                                       children_param,
                                       parent_param,
                                       state,
+                                      "N/A",
                                       false);
           // printf("\ttask_net::THEN %d\n",task_net::THEN);
           break;
@@ -109,6 +110,7 @@ class TableSetting {
                                       children_param,
                                       parent_param,
                                       state,
+                                      "N/A",
                                       false);
           // printf("\ttask_net::OR %d\n",task_net::OR);
           break;
@@ -118,6 +120,7 @@ class TableSetting {
                                       children_param,
                                       parent_param,
                                       state,
+                                      "N/A",
                                       false);
           // printf("\ttask_net::AND %d\n",task_net::AND);
           break;
@@ -138,8 +141,8 @@ class TableSetting {
                                     children_param,
                                     parent_param,
                                     state,
-                                    "/right_arm_mutex",
                                     obj_name.c_str(),
+                                    "/right_arm_mutex",
                                     object_pos,
                                     neutral_object_pos,
                                     false);

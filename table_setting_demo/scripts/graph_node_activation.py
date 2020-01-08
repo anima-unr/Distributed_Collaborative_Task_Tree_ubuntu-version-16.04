@@ -44,7 +44,7 @@ def latexify(fig_width=None, fig_height=None, columns=2):
 
     MAX_HEIGHT_INCHES = 8.0
     if fig_height > MAX_HEIGHT_INCHES:
-        print("WARNING: fig_height too large:" + fig_height + 
+        print("WARNING: fig_height too large:" + fig_height +
               "so will reduce to" + MAX_HEIGHT_INCHES + "inches.")
         fig_height = MAX_HEIGHT_INCHES
 
@@ -108,6 +108,8 @@ def GenerateHorizontalBar(data):
     # Determine start and end time
     data_array = np.array([[float(j) for j in i] for i in data])
     start_time, end_time = GetBeginAndEndTime(data_array[:, 0])
+    #end_time = 130
+    print end_time
     # determine segments
     # find activation times
     # build bitmask
@@ -136,14 +138,19 @@ def GenerateHorizontalBar(data):
 def GraphData(data_hash, order):
     #update state color map
     # plt.figure(figsize=(16, 9))
-    latexify()
-    viridis = plt.get_cmap('magma')
+    # latexify()
+    # viridis = plt.get_cmap('magma')
+    viridis = plt.get_cmap('jet')
     cnorm = colors.Normalize(vmin=0, vmax=100)
     scalarmap = cmx.ScalarMappable(norm=cnorm, cmap=viridis)
     state_color_map['000'] = scalarmap.to_rgba(100)
     state_color_map['001'] = scalarmap.to_rgba(75)
     state_color_map['101'] = scalarmap.to_rgba(50)
     state_color_map['011'] = scalarmap.to_rgba(25)
+    state_color_map['111'] = scalarmap.to_rgba(25)
+    state_color_map['010'] = scalarmap.to_rgba(25)
+    state_color_map['100'] = scalarmap.to_rgba(25)
+
 
     bar_width = 0.4
     segment_list = list()
@@ -160,6 +167,7 @@ def GraphData(data_hash, order):
         print "Processing - [%s]" % key
         # Generate bar graph for key value pair
         bar_info = GenerateHorizontalBar(data_hash[key])
+	print 
 
         if len(bar_info[0]) > max_length:
             max_length = len(bar_info[0])
@@ -171,46 +179,120 @@ def GraphData(data_hash, order):
         # extract row
         data = []
         color = []
+        print elem
         for elem in segment_list:
             if i < len(elem[0]):
                 data.append(elem[0][i])
+                print elem[1][i]
                 color.append(state_color_map[elem[1][i]])
             else:
                 data.append(0)
                 color.append([0.0, 0.0, 0.0, 0.0])
-        plt.barh(np.arange(0, len(data)*bar_width, bar_width), data, bar_width, color=color, left=x_offset)
+        # plt.barh(np.arange(0, len(data)*bar_width, bar_width), data, bar_width, color=color, left=x_offset)
+        plt.barh(np.arange(0, (len(data)-0.5)*bar_width, bar_width), data, bar_width, color=color, left=x_offset)
         x_offset += data
     inactive  = patches.Patch(color=state_color_map['000'], label='Inactive')
     active    = patches.Patch(color=state_color_map['001'], label='Active')
     working   = patches.Patch(color=state_color_map['101'], label='Running')
     done      = patches.Patch(color=state_color_map['011'], label='Done')
+    wtf       = patches.Patch(color=state_color_map['111'], label='Done')
+    wtf2      = patches.Patch(color=state_color_map['010'], label='Done')
+    wtf3      = patches.Patch(color=state_color_map['100'], label='Done')
 
 
     ylables = list()
+    # labels = {
+    #     'THEN_0_1_001_state_Data_.csv'  : 'THEN\_0',
+    #     'PLACE_3_1_002_state_Data_.csv' : 'PLACEMAT',
+    #     'AND_3_1_003_state_Data_.csv'   : 'AND\_0',
+    #     'OR_3_1_004_state_Data_.csv'    : 'OR\_0',
+    #     'PLACE_3_1_005_state_Data_.csv' : 'SPOON',
+    #     'PLACE_3_1_006_state_Data_.csv' : 'FORK',
+    #     'THEN_0_1_007_state_Data_.csv'  : 'THEN\_1',
+    #     'PLACE_3_1_008_state_Data_.csv' : 'KNIFE',
+    #     'PLACE_3_1_009_state_Data_.csv' : 'WINEGLASS',
+    #     'PLACE_3_1_010_state_Data_.csv' : 'CUP',
+    #     'PLACE_3_1_011_state_Data_.csv' : 'SODA',
+    #     'PLACE_3_1_012_state_Data_.csv' : 'PLATE',
+    #     'PLACE_3_1_013_state_Data_.csv' : 'BOWL',
+    # }
+
+   # Tea-time Baxter
+   # labels = {
+   #     'AND_2_1_014_state_Data_.csv'   : 'AND_1',
+   #     'THEN_0_1_015_state_Data_.csv'  : 'THEN_1',
+   #     'PLACE_3_1_016_state_Data_.csv' : 'Cup',
+   #     'AND_2_1_017_state_Data_.csv'   : 'AND_2',
+   #     'PLACE_3_1_018_state_Data_.csv' : 'Sugar',
+   #     'PLACE_3_1_019_state_Data_.csv' : 'Tea',
+   #     'THEN_0_1_020_state_Data_.csv'  : 'THEN_2',
+   #     'PLACE_3_1_021_state_Data_.csv' : 'Left_Bread',
+   #     'OR_1_1_022_state_Data_.csv'    : 'OR_1',
+   #     'PLACE_3_1_023_state_Data_.csv' : 'Meat',
+   #     'PLACE_3_1_024_state_Data_.csv' : 'Lettuce',
+   #     'PLACE_3_1_025_state_Data_.csv' : 'Right_Bread',
+   # }
+
+    # Tea-time PR2
+    '''labels = {
+       'THEN_0_0_001_state_Data_.csv'   : 'THEN_0',
+       'AND_2_0_002_state_Data_.csv'  : 'AND_2',
+       'PLACE_3_0_003_state_Data_.csv' : 'clock',
+       'PLACE_3_0_004_state_Data_.csv'   : 'teddy_bear',
+       'PLACE_3_0_005_state_Data_.csv' : 'scissors',
+       'OR_1_0_006_state_Data_.csv' : 'OR_1',
+       'PLACE_3_0_007_state_Data_.csv'  : 'cup',
+       'PLACE_3_0_008_state_Data_.csv' : 'sports_ball',
+    }'''
+    # Baxter
+    '''labels = {
+       'THEN_0_1_010_state_Data_.csv'   : 'THEN_0',
+       'AND_2_1_011_state_Data_.csv'  : 'AND_2',
+       'PLACE_3_1_012_state_Data_.csv' : 'clock',
+       'PLACE_3_1_013_state_Data_.csv'   : 'teddy_bear',
+       'PLACE_3_1_014_state_Data_.csv' : 'scissors',
+       'OR_1_1_015_state_Data_.csv' : 'OR_1',
+       'PLACE_3_1_016_state_Data_.csv'  : 'cup',
+       'PLACE_3_1_017_state_Data_.csv' : 'sports_ball',
+    }'''
+
+    # Baxter
+    '''labels = {
+       'AND_2_1_010_state_Data_.csv'   : 'AND_2',
+       'THEN_0_1_009_state_Data_.csv'  : 'THEN_0',
+       'PLACE_3_1_011_state_Data_.csv' : 'Cup',
+       'AND_2_1_013_state_Data_.csv'   : 'AND_2',
+       'PLACE_3_1_012_state_Data_.csv' : 'Tea_Pot',
+       'PLACE_3_1_014_state_Data_.csv' : 'Apple',
+       'PLACE_3_1_015_state_Data_.csv' : 'Burger',
+    }'''
+#human
     labels = {
-        'THEN_0_1_001_state_Data_.csv'  : 'THEN\_0',
-        'PLACE_3_1_002_state_Data_.csv' : 'PLACEMAT',
-        'AND_3_1_003_state_Data_.csv'   : 'AND\_0',
-        'OR_3_1_004_state_Data_.csv'    : 'OR\_0',
-        'PLACE_3_1_005_state_Data_.csv' : 'SPOON',
-        'PLACE_3_1_006_state_Data_.csv' : 'FORK',
-        'THEN_0_1_007_state_Data_.csv'  : 'THEN\_1',
-        'PLACE_3_1_008_state_Data_.csv' : 'KNIFE',
-        'PLACE_3_1_009_state_Data_.csv' : 'WINEGLASS',
-        'PLACE_3_1_010_state_Data_.csv' : 'CUP',
-        'PLACE_3_1_011_state_Data_.csv' : 'SODA',
-        'PLACE_3_1_012_state_Data_.csv' : 'PLATE',
-        'PLACE_3_1_013_state_Data_.csv' : 'BOWL',
+       'AND_2_0_002_state_Data_.csv'   : 'AND_2',
+       'THEN_0_0_001_state_Data_.csv'  : 'THEN_0',
+       'PLACE_3_0_003_state_Data_.csv' : 'Cup',
+       'AND_2_0_005_state_Data_.csv'   : 'AND_2',
+       'PLACE_3_0_004_state_Data_.csv' : 'Tea_Pot',
+       'PLACE_3_0_006_state_Data_.csv' : 'Apple',
+       'PLACE_3_0_007_state_Data_.csv' : 'Burger',
     }
+
     for key in order_list:
         ylables.append(labels[key])
 
-    plt.yticks(y_index, ylables)
-    plt.legend(handles=[inactive, active, working, done], ncol=4, mode="expand")
-    plt.ylabel("Behaviors")
-    plt.xlabel("t(s)")
+    print y_index
+    print ylables
+
+    plt.title("Trial 1 - HUMAN", fontsize=24)
+    plt.yticks(y_index, ylables, fontsize=24)
+    plt.xticks(fontsize=24)
+    plt.legend([inactive, active, working, done], ["Inactive", "Active", "Working", "Done"], loc='lower right')
+    plt.ylabel("Behaviors", fontsize=24)
+    plt.xlabel("t(s)", fontsize=24)
+    plt.xlim((0, 127))
     plt.tight_layout()
     ax = plt.gca()
+    ax.yaxis.grid(which="major", color='k', linestyle='-', linewidth=1)
     format_axes(ax)
     plt.show()
 
@@ -231,7 +313,7 @@ def main():
     print 'Loading files...'
     files = [f for f in os.listdir(args.dir) if os.path.isfile(os.path.join(args.dir, f))]
     # load ordering dictionary
-    with open('table_setting_demo_node_graph_order.txt', 'r') as file:
+    with open('/home/bashira/catkin_ws/src/Distributed_Collaborative_Task_Tree/table_setting_demo/scripts/table_setting_demo_node_graph_order.txt', 'r') as file:
         order = pickle.loads(file.read())
     # Generate data dictionary to store information
     data = dict()
@@ -249,3 +331,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # print(matplotlib.pyplot.colormaps())

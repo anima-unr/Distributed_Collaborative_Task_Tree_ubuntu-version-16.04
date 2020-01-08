@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="tf" type="static_transform_publisher" name="base_trans_rotation" args=".2114779 .-1139141 .9292166 -0.6834452 0.69439 -0.155173 0.16323 base kinect2_link 5" />
+</launch>

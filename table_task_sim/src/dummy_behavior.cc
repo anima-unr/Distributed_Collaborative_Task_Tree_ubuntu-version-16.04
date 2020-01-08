@@ -19,7 +19,8 @@ DummyBehavior::DummyBehavior(NodeId_t name, NodeList peers, NodeList children,
       peers,
       children,
       parent,
-      state), mut_arm(name.topic.c_str(), "/right_arm_mutex") {
+      state,
+      object), mut_arm(name.topic.c_str(), "/right_arm_mutex") {
 
     object_ = object;
     state_.done = false;
@@ -93,6 +94,18 @@ void DummyBehavior::UpdateActivationPotential() {
 
 bool DummyBehavior::Precondition() {
     // ROS_INFO("AndBehavior::Precondition was called!!!!\n");
+    // if(state_.peer_active == 1 && state_.active == 1){
+    //   printf("COLLISION IS HAPPENING FOR OBJECT = %s peer_0 %d peer_1 %d peer_2 %d\n\n\n\n",object_.c_str(),state_.peer_active_robot_0,state_.peer_active_robot_1,state_.peer_active_robot_2);
+    //   if(state_.peer_active_robot_0 == 1){
+    //     ROS_ERROR("COLLISION IS HAPPENING FOR OBJECT = %s with Robot 0 - PR2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n\n",object_.c_str());
+    //   }
+    //   if(state_.peer_active_robot_1 == 1){
+    //     ROS_ERROR("COLLISION IS HAPPENING FOR OBJECT = %s with robot 1 - Baxter~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n\n",object_.c_str());
+    //   }
+    //   if(state_.peer_active_robot_2 == 1){
+    //     ROS_ERROR("COLLISION IS HAPPENING FOR OBJECT = %s with robot 2 - Human~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n\n",object_.c_str());
+    //   }
+    // }
   return true;
 }
 
@@ -119,6 +132,8 @@ void DummyBehavior::Work() {
 
 void DummyBehavior::PickAndPlace(std::string object, ROBOT robot_des) {
 
+
+
   // pick
   table_task_sim::PickUpObject req_pick;
   req_pick.request.robot_id = (int)robot_des;
@@ -141,15 +156,55 @@ void DummyBehavior::PickAndPlace(std::string object, ROBOT robot_des) {
   // table_task_sim::PlaceObject::Response res_place; //to know if it failed or not...
 
   // call the pick service
-  if(ros::service::call("pick_service", req_pick)) {
+    bool coll_test;
+    
+    ros::param::get("/Collision", coll_test);
+    ros::Duration(1).sleep();
+    std::cout << "DummyBehavior~~:Collision is set to: " << coll_test << "\n\n\n\n\n\n\n";
 
-    ROS_INFO("\t\t[%s]: THE PICK SERVICE WAS CALLED!!", name_->topic.c_str());
+  ros::Duration(6).sleep();
 
-    // call the place service
-    if(ros::service::call("place_service", req_place)) {
-      ROS_INFO("\t\t[%s]: THE PLACE SERVICE WAS CALLED!!", name_->topic.c_str());
+  // if(ros::service::call("pick_service", req_pick)) {
+
+  //     ROS_INFO("\t\t[%s]: THE PICK SERVICE WAS CALLED!!", name_->topic.c_str());
+
+  //     // call the place service
+  //     if(ros::service::call("place_service", req_place)) {
+  //       ROS_INFO("\t\t[%s]: THE PLACE SERVICE WAS CALLED!!", name_->topic.c_str());
+  //     }
+  //   }
+
+  if(coll_test==0){
+  
+    if(ros::service::call("pick_service", req_pick)) {
+
+      ROS_INFO("\t\t[%s]: THE PICK SERVICE WAS CALLED!!", name_->topic.c_str());
+
+      // call the place service
+      if(ros::service::call("place_service", req_place)) {
+        ROS_INFO("\t\t[%s]: THE PLACE SERVICE WAS CALLED!!", name_->topic.c_str());
+      }
     }
   }
+  else{
+
+    bool coll_response;
+    ros::Duration(1).sleep();
+    ros::param::get("/Collision_response", coll_response);
+    std::cout << "DummyBehavior:Collision response is set to: " << coll_response << "\n\n\n\n\n\n\n";
+    //ros::Duration(5).sleep();
+    if(coll_response==0){
+      if(ros::service::call("pick_service", req_pick)) {
+
+        ROS_INFO("\t\t[%s]: THE PICK SERVICE WAS CALLED!!", name_->topic.c_str());
+
+        // call the place service
+        if(ros::service::call("place_service", req_place)) {
+          ROS_INFO("\t\t[%s]: THE PLACE SERVICE WAS CALLED!!", name_->topic.c_str());
+       }
+    } 
+  }
+}
 
   state_.done = true;
   ROS_INFO( "[%s]: PickAndPlace: everything is done", name_->topic.c_str() );
@@ -181,7 +236,7 @@ bool DummyBehavior::ActivationPrecondition() {
     // return true;
   }
   else{
-    ROS_INFO("\t[%s]: Peer gained access first, don't activate!", name_->topic.c_str());
+    ROS_INFO("\t[%s]: Peer gained access first, don't activate! %d %d %d", name_->topic.c_str(),state_.peer_active,state_.peer_done,state_.peer_active_robot_2);
     return false;
   }
 
@@ -200,5 +255,16 @@ bool DummyBehavior::ActivationPrecondition() {
   {
     table_state_ = msg;
   }
+void DummyBehavior::ReleaseMutexLocs() {
+ ROS_DEBUG("Releasing mutex from tableobjbehavior");
+
+ ROS_WARN("Releasing mutex from tableobjbehavior %s %d %d peers %d %d %d\n\n\n\n\n\n\n\n",name_->topic.c_str(),state_.active,state_.done,state_.peer_active,state_.peer_done,state_.peer_active_robot_2);
+
+ // release the Mutex for the remote mutex
+ mut_arm.Release();
+ ROS_WARN("Releasing mutex from tableobjbehavior %s %d %d peers %d %d %d\n\n\n\n\n\n\n\n",name_->topic.c_str(),state_.active,state_.done,state_.peer_active,state_.peer_done,state_.peer_active_robot_2);
+ return;
+}
+
 
 }  // namespace task_net
