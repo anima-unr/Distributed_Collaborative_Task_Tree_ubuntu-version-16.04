@@ -131,8 +131,6 @@ class NodePeerConnectionInterface:
         print(self.server_params.address)
         a = subscriber.connect("tcp://%s:%s"%(self.server_params.address, self.server_params.sub_port))
         print(a)
-        if a==1:
-            print('trueeeeeeeeeeeee')
         subscriber.setsockopt(zmq.SUBSCRIBE, topic)
         subscriber.setsockopt(zmq.RCVTIMEO, 1000)
 
@@ -163,8 +161,8 @@ def main():
     server = ServerParam
     server.sub_port = rospy.get_param('~sub_port', '5565')
     server.pub_port = rospy.get_param('~pub_port', '5566')
-    server.address = '134.197.43.10 '
-    #server.address = 'localhost'
+    #server.address = '134.197.43.10 '
+    server.address = 'localhost'
     running_event = threading.Event()
     running_event.set()
     print(server.address)

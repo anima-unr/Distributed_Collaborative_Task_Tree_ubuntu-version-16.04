@@ -1560,10 +1560,13 @@ moveit_msgs::DisplayTrajectory display_trajectory;
   arm_group_.setGoalOrientationTolerance(0.0075); 
 
     moveit::planning_interface::MoveGroup::Plan motion_plan;
-    success = arm_group_.plan(motion_plan);
+    //success = arm_group_.plan(motion_plan);
 
     // success = arm_group_.move();
-    ROS_INFO("  Visualizing plan! %s",success?"":"FAILED");
+    //ROS_INFO("  Visualizing plan! %s",success?"":"FAILED");
+    moveit::planning_interface::MoveItErrorCode success = arm_group_.plan(motion_plan);
+
+ROS_INFO_NAMED("moveo", "Visualizing plan 1 (pose goal) %s", success == moveit_msgs::MoveItErrorCodes::SUCCESS ? "" : "FAILED");
     sleep(1.0);
 
     // if (!finished_within_time) {

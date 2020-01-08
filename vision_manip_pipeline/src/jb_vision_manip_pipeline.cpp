@@ -96,9 +96,12 @@ bool moveArm(geometry_msgs::PoseStamped newApp, geometry_msgs::PoseStamped newPn
   group.setPoseTarget(pose_target);
 
   moveit::planning_interface::MoveGroup::Plan my_plan;
-  bool success = group.plan(my_plan);
+  //bool success = group.plan(my_plan);
 
-  ROS_INFO("Visualizing plan 1 (pose goal) %s",success?"":"FAILED");
+  //ROS_INFO("Visualizing plan 1 (pose goal) %s",success?"":"FAILED");
+   moveit::planning_interface::MoveItErrorCode success = group.plan(my_plan);
+
+   ROS_INFO_NAMED("moveo", "Visualizing plan 1 (pose goal) %s", success == moveit_msgs::MoveItErrorCodes::SUCCESS ? "" : "FAILED");
 
   if( success) {
     /* Sleep to give Rviz time to visualize the plan. */
